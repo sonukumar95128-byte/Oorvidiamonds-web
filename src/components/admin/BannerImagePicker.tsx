@@ -11,8 +11,7 @@ type BannerImagePickerProps = {
 
 type Tab = "upload" | "products";
 
-const MAX_SIZE_MB = 2;
-const RECOMMENDED = "1920 × 700 px (hero) · 1600 × 500 px (promo strip)";
+const RECOMMENDED = "1920 × 700 px (hero slider) · 1600 × 500 px (promo strip)";
 
 export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
   const { products } = useAdmin();
@@ -25,35 +24,31 @@ export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
 
   const filtered = products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase())).slice(0, 60);
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setError("");
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
-    if (!allowedTypes.includes(file.type)) {
-      setError("Only JPG, PNG, WebP, or AVIF images are supported.");
-      return;
-    }
-    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      setError(`File too large — please upload under ${MAX_SIZE_MB} MB.`);
-      return;
-    }
-
     setUploading(true);
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const dataUrl = ev.target?.result as string;
-      onChange(dataUrl);
-      setOpen(false);
+
+    try {
+      const form = new FormData();
+      form.append("file", file);
+
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Upload failed.");
+      } else {
+        onChange(data.url);
+        setOpen(false);
+      }
+    } catch {
+      setError("Network error — please try again.");
+    } finally {
       setUploading(false);
-    };
-    reader.onerror = () => {
-      setError("Failed to read file. Please try again.");
-      setUploading(false);
-    };
-    reader.readAsDataURL(file);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -88,17 +83,19 @@ export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
           <div className="p-3">
             {tab === "upload" && (
               <div>
-                {/* Size guidance */}
                 <div className="mb-3 rounded-lg bg-beige/50 px-3 py-2 text-xs text-ink/60 leading-relaxed">
                   <p className="font-medium text-brand mb-0.5">Recommended size</p>
                   <p>{RECOMMENDED}</p>
-                  <p className="mt-0.5">Format: JPG · PNG · WebP · Max {MAX_SIZE_MB} MB</p>
+                  <p className="mt-0.5">Format: JPG · PNG · WebP · Max 5 MB</p>
                 </div>
 
-                <label className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-beige hover:border-gold transition-colors cursor-pointer py-6 px-4">
-                  <span className="text-2xl">🖼</span>
+                <label className={
+                  "flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-6 transition-colors " +
+                  (uploading ? "border-beige opacity-60 cursor-not-allowed" : "border-beige hover:border-gold cursor-pointer")
+                }>
+                  <span className="text-2xl">{uploading ? "⏳" : "🖼"}</span>
                   <span className="text-sm font-medium text-brand">
-                    {uploading ? "Reading file…" : "Click to choose file"}
+                    {uploading ? "Uploading…" : "Click to choose file"}
                   </span>
                   <span className="text-xs text-ink/40">JPG, PNG, WebP accepted</span>
                   <input
@@ -113,10 +110,10 @@ export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
 
                 {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
 
-                {value?.startsWith("data:") && (
+                {value && !value.startsWith("data:") && value.startsWith("/uploads/") && (
                   <div className="mt-3">
                     <p className="text-xs text-ink/50 mb-1">Current (uploaded):</p>
-                    <div className="relative h-16 w-full rounded-lg overflow-hidden bg-beige">
+                    <div className="relative h-14 w-full rounded-lg overflow-hidden bg-beige">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={value} alt="Current banner" className="h-full w-full object-cover" />
                     </div>

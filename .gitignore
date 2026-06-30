@@ -45,3 +45,7 @@ next-env.d.ts
 
 # local Claude Code settings (personal permission allowlist, not app config)
 .claude/settings.local.json
+
+# user-uploaded banner/product images (saved on server at runtime, not in git)
+/public/uploads/*
+!/public/uploads/.gitkeep
