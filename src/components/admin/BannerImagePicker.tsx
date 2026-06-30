@@ -52,7 +52,7 @@ export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
   };
 
   return (
-    <div className="relative">
+    <div>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -62,7 +62,15 @@ export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
       </button>
 
       {open && (
-        <div className="absolute z-20 mt-2 w-80 rounded-xl border border-beige bg-white shadow-lg">
+        /* Fixed modal overlay — escapes overflow:hidden parent containers */
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setOpen(false)}
+        >
+        <div
+          className="w-full max-w-sm rounded-xl border border-beige bg-white shadow-xl"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Tabs */}
           <div className="flex border-b border-beige">
             {(["upload", "products"] as Tab[]).map((t) => (
@@ -165,6 +173,7 @@ export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
               Close
             </button>
           </div>
+        </div>
         </div>
       )}
     </div>
