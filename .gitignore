@@ -49,3 +49,7 @@ next-env.d.ts
 # user-uploaded banner/product images (saved on server at runtime, not in git)
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# real product images served from lakshiraah.in CDN — not bundled in git
+/public/products/*
+!/public/products/.gitkeep
