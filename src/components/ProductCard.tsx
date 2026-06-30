@@ -82,26 +82,39 @@ export function ProductCard({ slug, image, name, price, badge, href }: ProductCa
         )}
 
         {price ? (
-          <p className="text-sm font-semibold text-brand mb-2.5">{price}</p>
+          <p className="text-sm font-semibold text-brand mb-4">{price}</p>
         ) : (
-          <div className="h-3 w-1/2 rounded bg-beige mb-2.5" />
+          <div className="h-3 w-1/2 rounded bg-beige mb-4" />
         )}
 
-        {inBag ? (
-          <Link
-            href="/cart"
-            className="block w-full rounded-full bg-brand text-center text-xs font-medium text-gold-light py-2 transition-colors hover:bg-brand-secondary whitespace-nowrap"
-          >
-            Added ✓ View Bag
-          </Link>
-        ) : (
+        {/* Add to Bag + Wishlist in one row */}
+        <div className="flex items-center gap-2">
+          {inBag ? (
+            <Link
+              href="/cart"
+              className="flex-1 rounded-full bg-brand text-center text-xs font-medium text-gold-light py-2 transition-colors hover:bg-brand-secondary whitespace-nowrap"
+            >
+              Added ✓ View Bag
+            </Link>
+          ) : (
+            <button
+              onClick={() => addItem(slug)}
+              className="flex-1 rounded-full border border-brand text-xs font-medium text-brand py-2 transition-colors hover:bg-brand hover:text-gold-light whitespace-nowrap"
+            >
+              Add to Bag
+            </button>
+          )}
           <button
-            onClick={() => addItem(slug)}
-            className="w-full rounded-full border border-brand text-xs font-medium text-brand py-2 transition-colors hover:bg-brand hover:text-gold-light whitespace-nowrap"
+            onClick={() => toggleWishlist(slug)}
+            aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            className={
+              "shrink-0 grid h-8 w-8 place-items-center rounded-full border transition-colors " +
+              (wishlisted ? "border-gold bg-gold-light/20 text-gold" : "border-beige text-ink/40 hover:border-gold hover:text-gold")
+            }
           >
-            Add to Bag
+            <span className="text-sm">{wishlisted ? "♥" : "♡"}</span>
           </button>
-        )}
+        </div>
       </div>
     </div>
   );
