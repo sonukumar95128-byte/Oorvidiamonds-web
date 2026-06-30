@@ -6,6 +6,33 @@ import { useEffect, useState } from "react";
 
 type Slide = { image: string; href: string; alt: string };
 
+function GlassArrow({
+  direction,
+  onClick,
+}: {
+  direction: "left" | "right";
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
+      aria-label={direction === "left" ? "Previous slide" : "Next slide"}
+      className={
+        "absolute top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full " +
+        "bg-white/20 backdrop-blur-md border border-white/30 text-white text-xl " +
+        "flex items-center justify-center hover:bg-white/35 active:scale-95 " +
+        "transition-all duration-200 shadow-lg " +
+        (direction === "left" ? "left-4 sm:left-6" : "right-4 sm:right-6")
+      }
+    >
+      {direction === "left" ? "‹" : "›"}
+    </button>
+  );
+}
+
 export function HeroSlider({ slides }: { slides: Slide[] }) {
   const [active, setActive] = useState(0);
 
@@ -16,6 +43,9 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
   }, [slides.length]);
 
   if (slides.length === 0) return null;
+
+  const prev = () => setActive((i) => (i - 1 + slides.length) % slides.length);
+  const next = () => setActive((i) => (i + 1) % slides.length);
 
   return (
     <div className="relative aspect-[16/6] w-full overflow-hidden">
@@ -30,18 +60,33 @@ export function HeroSlider({ slides }: { slides: Slide[] }) {
           aria-hidden={i !== active}
           tabIndex={i === active ? 0 : -1}
         >
-          <Image src={slide.image} alt={slide.alt} fill priority={i === 0} sizes="100vw" className="object-cover" />
+          <Image
+            src={slide.image}
+            alt={slide.alt}
+            fill
+            priority={i === 0}
+            sizes="100vw"
+            className="object-cover"
+          />
         </Link>
       ))}
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+      {slides.length > 1 && (
+        <>
+          <GlassArrow direction="left" onClick={prev} />
+          <GlassArrow direction="right" onClick={next} />
+        </>
+      )}
+
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
         {slides.map((_, i) => (
           <button
             key={i}
             aria-label={`Go to slide ${i + 1}`}
             onClick={() => setActive(i)}
             className={
-              "h-2 w-2 rounded-full transition-colors " + (i === active ? "bg-gold" : "bg-white/60")
+              "rounded-full transition-all duration-300 " +
+              (i === active ? "h-2 w-6 bg-gold" : "h-2 w-2 bg-white/60 hover:bg-white/90")
             }
           />
         ))}
