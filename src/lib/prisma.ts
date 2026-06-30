@@ -1,25 +1,21 @@
-// Prisma client is initialized lazily — only creates a connection when getPrisma() is
-// actually called, not at module import time. This prevents startup crashes if
-// DATABASE_URL isn't set or the DB isn't immediately reachable (e.g. cold container start).
+// Prisma client — safe lazy initialization.
+// The client is only created when first used, not when the module is imported.
+// This prevents 503 crashes on Hostinger when the DB connection isn't ready at startup.
 
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
-
-export function getPrisma(): PrismaClient {
-  if (!globalForPrisma.prisma) {
-    const url = process.env.DATABASE_URL;
-    if (!url) throw new Error("DATABASE_URL is not set");
-    const adapter = new PrismaMariaDb(url);
-    globalForPrisma.prisma = new PrismaClient({ adapter });
-  }
-  return globalForPrisma.prisma;
+declare global {
+  // eslint-disable-next-line no-var
+  var _prisma: PrismaClient | undefined;
 }
 
-// Convenience export for when you're sure the DB is configured
-export const prisma = new Proxy({} as PrismaClient, {
-  get(_target, prop) {
-    return getPrisma()[prop as keyof PrismaClient];
-  },
-});
+export function getPrisma(): PrismaClient {
+  if (!global._prisma) {
+    const url = process.env.DATABASE_URL;
+    if (!url) throw new Error("DATABASE_URL is not configured.");
+    const adapter = new PrismaMariaDb(url);
+    global._prisma = new PrismaClient({ adapter });
+  }
+  return global._prisma;
+}
