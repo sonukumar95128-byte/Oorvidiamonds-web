@@ -53,38 +53,30 @@ export function ProductCard({ slug, image, name, price, badge, href }: ProductCa
             {badge}
           </span>
         )}
-        <button
-          onClick={() => toggleWishlist(slug)}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className={
-            "absolute top-2.5 right-2.5 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/85 backdrop-blur-sm shadow-sm transition-colors " +
-            (wishlisted ? "text-gold" : "text-ink/40 hover:text-gold")
-          }
-        >
-          <span className="text-sm">{wishlisted ? "♥" : "♡"}</span>
-        </button>
       </div>
 
       {/* Info + actions inside the card */}
       <div className="p-3">
+        {/* Price first */}
+        {price ? (
+          <p className="text-sm font-semibold text-brand mb-1">{price}</p>
+        ) : (
+          <div className="h-3 w-1/2 rounded bg-beige mb-1" />
+        )}
+
+        {/* Then title */}
         {name ? (
           href ? (
             <Link href={href}>
-              <p className="text-sm text-ink line-clamp-1 hover:text-gold transition-colors leading-snug mb-1">
+              <p className="text-xs text-ink/70 line-clamp-1 hover:text-gold transition-colors leading-snug mb-4">
                 {name}
               </p>
             </Link>
           ) : (
-            <p className="text-sm text-ink line-clamp-1 leading-snug mb-1">{name}</p>
+            <p className="text-xs text-ink/70 line-clamp-1 leading-snug mb-4">{name}</p>
           )
         ) : (
-          <div className="h-3 w-3/4 rounded bg-beige mb-1" />
-        )}
-
-        {price ? (
-          <p className="text-sm font-semibold text-brand mb-4">{price}</p>
-        ) : (
-          <div className="h-3 w-1/2 rounded bg-beige mb-4" />
+          <div className="h-3 w-3/4 rounded bg-beige mb-4" />
         )}
 
         {/* Add to Bag + Wishlist in one row */}
