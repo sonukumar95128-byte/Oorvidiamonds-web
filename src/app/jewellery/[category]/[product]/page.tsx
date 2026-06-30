@@ -17,12 +17,9 @@ import {
   styleTags,
 } from "@/lib/dummy-images";
 
-export function generateStaticParams() {
-  return dummyProducts.map((p) => ({
-    category: categoryToSlug(p.category),
-    product: p.slug,
-  }));
-}
+// Render dynamically on demand — avoids pre-building all 196 product pages during
+// deployment, which uses too much memory on Hostinger's server.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

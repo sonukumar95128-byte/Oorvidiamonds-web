@@ -9,9 +9,7 @@ import {
   slugToCategory,
 } from "@/lib/dummy-images";
 
-export function generateStaticParams() {
-  return categories.map((c) => ({ category: categoryToSlug(c) }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
