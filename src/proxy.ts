@@ -8,7 +8,9 @@ export function proxy(request: NextRequest) {
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     const authed = request.cookies.get(ADMIN_COOKIE)?.value === "1";
     if (!authed) {
-      const loginUrl = new URL("/admin/login", request.url);
+      // Use request.nextUrl.origin so the redirect works correctly behind
+      // Hostinger's reverse proxy (request.url gives 0.0.0.0:3000 internally).
+      const loginUrl = new URL("/admin/login", request.nextUrl.origin);
       loginUrl.searchParams.set("next", pathname);
       return NextResponse.redirect(loginUrl);
     }
