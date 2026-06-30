@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && NODE_OPTIONS=--max-old-space-size=2048 next build",
+    "build": "prisma generate && NEXT_CPUS=1 NODE_OPTIONS=--max-old-space-size=1536 next build",
     "start": "next start -p ${PORT:-3000}",
     "lint": "eslint"
   },
