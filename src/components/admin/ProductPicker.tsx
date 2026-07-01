@@ -131,7 +131,7 @@ export function ProductPicker({ title, description, initialSelected, onSave, bac
             {selectedProducts.map((p) => (
               <div key={p.slug} className="flex items-center gap-3 px-3 py-2">
                 <div className="relative h-10 w-10 shrink-0 rounded-lg overflow-hidden bg-beige border border-beige">
-                  <Image src={p.image} alt={p.name} fill sizes="40px" className="object-cover" />
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 </div>
                 <p className="flex-1 min-w-0 text-sm text-ink line-clamp-1">{p.name}</p>
                 <button

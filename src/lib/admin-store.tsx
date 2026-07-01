@@ -352,7 +352,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         if (db.settings) setSettings(db.settings as typeof seedSettings);
         if (db.newArrivals) setNewArrivalsSlugs(db.newArrivals as string[]);
         if (db.bestSellers) setBestSellersSlugs(db.bestSellers as string[]);
-        if (db.productReviews) setProductReviews(db.productReviews as typeof seedTestimonials);
+        if (db.productReviews) setProductReviews(db.productReviews as ProductReview[]);
         if (db.categoryImages) setCategoryImages(db.categoryImages as Record<string, string>);
       })
       .catch(() => { /* DB not available — localStorage values stay */ })
