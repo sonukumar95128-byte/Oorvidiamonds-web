@@ -3,9 +3,10 @@
 import Image from "next/image";
 import { BannerImagePicker } from "@/components/admin/BannerImagePicker";
 import { useAdmin } from "@/lib/admin-store";
+import { categories } from "@/lib/dummy-images";
 
 export default function AdminBannersPage() {
-  const { heroSlidesAdmin, addHeroSlide, updateHeroSlide, toggleHeroSlide, deleteHeroSlide, promoStrips, updatePromoStrip } =
+  const { heroSlidesAdmin, addHeroSlide, updateHeroSlide, toggleHeroSlide, deleteHeroSlide, promoStrips, updatePromoStrip, categoryImages, updateCategoryImage } =
     useAdmin();
 
   return (
@@ -71,6 +72,29 @@ export default function AdminBannersPage() {
         {heroSlidesAdmin.length === 0 && (
           <p className="px-4 py-8 text-center text-sm text-ink/40">No slides yet — add one above.</p>
         )}
+      </div>
+
+      {/* Category circle images */}
+      <h2 className="text-sm font-medium text-brand mb-3">Category circle images</h2>
+      <p className="text-xs text-ink/50 mb-4">These appear on the homepage as the 6 category circles (Rings, Earrings, etc.)</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
+        {categories.map((cat) => (
+          <div key={cat} className="rounded-xl border border-beige bg-white p-4">
+            <div className="relative h-20 w-20 mx-auto rounded-full overflow-hidden bg-beige border border-beige mb-3">
+              <img
+                src={categoryImages[cat]}
+                alt={cat}
+                className="h-full w-full object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+            </div>
+            <p className="text-sm font-medium text-brand text-center mb-2">{cat}</p>
+            <BannerImagePicker
+              value={categoryImages[cat]}
+              onChange={(url) => updateCategoryImage(cat, url)}
+            />
+          </div>
+        ))}
       </div>
 
       <h2 className="text-sm font-medium text-brand mb-3">Promo strips</h2>

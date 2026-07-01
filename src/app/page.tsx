@@ -7,7 +7,7 @@ import { HeroSlider } from "@/components/HeroSlider";
 import { SectionHeading } from "@/components/SectionHeading";
 import { StylingStories } from "@/components/StylingStories";
 import { useAdmin } from "@/lib/admin-store";
-import { categories, categoryImages, categoryToSlug, productImages, promoImage } from "@/lib/dummy-images";
+import { categories, categoryToSlug, productImages, promoImage } from "@/lib/dummy-images";
 
 const trustBadges = [
   { icon: "✓", label: "Hallmarked", sub: "BIS certified" },
@@ -21,6 +21,7 @@ export default function Home() {
     bestSellersSlugs,
     heroSlidesAdmin,
     promoStrips,
+    categoryImages,
     homepageSections,
     collections,
     testimonials,
@@ -57,7 +58,7 @@ export default function Home() {
                 className="flex flex-col items-center gap-2 group"
               >
                 <div className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden ring-1 ring-beige group-hover:ring-2 group-hover:ring-gold transition-all">
-                  <Image src={categoryImages[c]} alt={c} fill sizes="96px" className="object-cover" />
+                  <Image src={categoryImages[c] ?? ""} alt={c} fill sizes="96px" className="object-cover" />
                 </div>
                 <span className="text-sm text-ink/80">{c}</span>
               </Link>

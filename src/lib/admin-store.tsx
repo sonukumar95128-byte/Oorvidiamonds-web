@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import {
+  categoryImages as defaultCategoryImages,
   collectionImages,
   dummyProducts,
   dummyTestimonials,
@@ -113,6 +114,7 @@ const SETTINGS_KEY = "lakshiraah-admin-settings";
 const PRODUCT_REVIEWS_KEY = "lakshiraah-product-reviews";
 const NEW_ARRIVALS_KEY = "lakshiraah-admin-new-arrivals";
 const BEST_SELLERS_KEY = "lakshiraah-admin-best-sellers";
+const CATEGORY_IMAGES_KEY = "lakshiraah-admin-category-images";
 
 const seedProducts: AdminProduct[] = dummyProducts;
 
@@ -275,6 +277,9 @@ type AdminContextValue = {
   setNewArrivalsSlugs: (slugs: string[]) => void;
   bestSellersSlugs: string[];
   setBestSellersSlugs: (slugs: string[]) => void;
+
+  categoryImages: Record<string, string>;
+  updateCategoryImage: (category: string, url: string) => void;
 };
 
 const AdminContext = createContext<AdminContextValue | null>(null);
@@ -292,6 +297,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const [productReviews, setProductReviews] = useState<ProductReview[]>([]);
   const [newArrivalsSlugs, setNewArrivalsSlugs] = useState<string[]>(seedNewArrivals);
   const [bestSellersSlugs, setBestSellersSlugs] = useState<string[]>(seedBestSellers);
+  const [categoryImages, setCategoryImages] = useState<Record<string, string>>(defaultCategoryImages);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -323,6 +329,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       if (rawNewArrivals) setNewArrivalsSlugs(JSON.parse(rawNewArrivals));
       const rawBestSellers = localStorage.getItem(BEST_SELLERS_KEY);
       if (rawBestSellers) setBestSellersSlugs(JSON.parse(rawBestSellers));
+      const rawCategoryImages = localStorage.getItem(CATEGORY_IMAGES_KEY);
+      if (rawCategoryImages) setCategoryImages(JSON.parse(rawCategoryImages));
     } catch {
       // ignore malformed storage
     }
@@ -345,6 +353,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         if (db.newArrivals) setNewArrivalsSlugs(db.newArrivals as string[]);
         if (db.bestSellers) setBestSellersSlugs(db.bestSellers as string[]);
         if (db.productReviews) setProductReviews(db.productReviews as typeof seedTestimonials);
+        if (db.categoryImages) setCategoryImages(db.categoryImages as Record<string, string>);
       })
       .catch(() => { /* DB not available — localStorage values stay */ })
       .finally(() => setHydrated(true));
@@ -423,6 +432,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   useEffect(() => { if (hydrated) syncDb("newArrivals", newArrivalsSlugs); }, [newArrivalsSlugs, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (hydrated) syncDb("bestSellers", bestSellersSlugs); }, [bestSellersSlugs, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (hydrated) syncDb("productReviews", productReviews); }, [productReviews, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(CATEGORY_IMAGES_KEY, JSON.stringify(categoryImages));
+    syncDb("categoryImages", categoryImages);
+  }, [categoryImages, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateSettings = (updates: Partial<SiteSettings>) => {
     setSettings((prev) => ({ ...prev, ...updates }));
@@ -566,6 +580,10 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setCoupons((prev) => prev.filter((c) => c.id !== id));
   };
 
+  const updateCategoryImage = (category: string, url: string) => {
+    setCategoryImages((prev) => ({ ...prev, [category]: url }));
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -612,6 +630,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         setNewArrivalsSlugs,
         bestSellersSlugs,
         setBestSellersSlugs,
+        categoryImages,
+        updateCategoryImage,
       }}
     >
       {children}
