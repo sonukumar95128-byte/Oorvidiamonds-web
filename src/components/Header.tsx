@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
+import { useUser } from "@/lib/user-store";
 
 const navLinks = [
   { label: "Shop", href: "/jewellery" },
@@ -55,6 +56,7 @@ function SearchIcon() {
 export function Header() {
   const { itemCount } = useCart();
   const { count: wishlistCount } = useWishlist();
+  const { user, isLoggedIn } = useUser();
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [hidden, setHidden] = useState(false);
@@ -169,14 +171,20 @@ export function Header() {
             )}
           </Link>
           <Link
-            href="/account"
+            href={isLoggedIn ? "/account" : "/login"}
             aria-label="Account"
             className={
               "grid h-9 w-9 place-items-center rounded-full border transition-colors hover:border-gold hover:text-gold " +
               (dark ? "border-gold-light/25 text-gold-light/80" : "border-beige text-ink/70")
             }
           >
-            <UserIcon />
+            {isLoggedIn && user ? (
+              <span className="font-heading italic text-sm font-semibold">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+            ) : (
+              <UserIcon />
+            )}
           </Link>
         </div>
       </div>
