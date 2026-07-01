@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
-// Images stored in public_html/Product-images
-const IMG_DIR = "/home/u771790581/domains/lakshiraah.com/public_html/Product-images";
+// Images stored in home dir — never wiped by deploys
+const IMG_DIR = "/home/u771790581/product-images";
 
 export async function GET(
   _req: NextRequest,
