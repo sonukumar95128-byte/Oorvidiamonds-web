@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // Images stored in home dir — never wiped by deploys
-const IMG_DIR = "/home/u771790581/product-images";
+const IMG_DIR = "/home/u771790581/domains/lakshiraah.com/product-images";
 
 export async function GET(
   _req: NextRequest,
