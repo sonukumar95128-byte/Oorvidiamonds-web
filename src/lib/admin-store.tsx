@@ -100,7 +100,7 @@ export type SiteSettings = {
 
 // v3: bumped after setting all stock to 50 (was 1 each from the CSV).
 // Changing this key invalidates any stale browser cache from before that change.
-const PRODUCTS_KEY = "lakshiraah-admin-products-v3";
+const PRODUCTS_KEY = "lakshiraah-admin-products-v4";
 // v2: bumped after removing the 5 sample/dummy orders.
 const ORDERS_KEY = "lakshiraah-admin-orders-v2";
 // v2: bumped after adding manageHref links to sections.
