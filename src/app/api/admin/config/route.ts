@@ -7,10 +7,23 @@ async function isAdmin() {
   return jar.get("admin_auth")?.value === "1";
 }
 
-// GET /api/admin/config?key=banners  — omit key to get all
+// In-memory cache — avoids hitting MySQL on every page load
+let cache: { data: Record<string, unknown>; at: number } | null = null;
+const CACHE_TTL_MS = 60_000; // 1 minute
+
+function invalidateCache() { cache = null; }
+
+// GET /api/admin/config
 export async function GET(request: NextRequest) {
   const key = request.nextUrl.searchParams.get("key");
   try {
+    // Serve from memory cache if fresh
+    if (!key && cache && Date.now() - cache.at < CACHE_TTL_MS) {
+      return NextResponse.json(cache.data, {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30" },
+      });
+    }
+
     const prisma = getPrisma();
     if (key) {
       const row = await prisma.siteConfig.findUnique({ where: { key } });
@@ -19,7 +32,13 @@ export async function GET(request: NextRequest) {
     const rows = await prisma.siteConfig.findMany();
     const result: Record<string, unknown> = {};
     for (const row of rows) result[row.key] = row.value;
-    return NextResponse.json(result);
+
+    // Store in memory cache
+    cache = { data: result, at: Date.now() };
+
+    return NextResponse.json(result, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30" },
+    });
   } catch {
     return NextResponse.json(null, { status: 500 });
   }
@@ -37,6 +56,7 @@ export async function POST(request: NextRequest) {
       update: { value },
       create: { key, value },
     });
+    invalidateCache(); // fresh data on next GET
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "DB error" }, { status: 500 });
