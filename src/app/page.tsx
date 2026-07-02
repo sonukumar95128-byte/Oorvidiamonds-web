@@ -50,17 +50,17 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-16">
         {/* Category circles */}
         {isOn("categories") && (
-          <section className="flex flex-wrap justify-center gap-8 sm:gap-12">
+          <section className="flex overflow-x-auto sm:overflow-visible sm:flex-wrap sm:justify-center gap-8 sm:gap-10 pb-2 sm:pb-0 scrollbar-hide">
             {categories.map((c) => (
               <Link
                 key={c}
                 href={`/jewellery/${categoryToSlug(c)}`}
-                className="flex flex-col items-center gap-2 group"
+                className="flex flex-col items-center gap-3 group shrink-0"
               >
-                <div className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden ring-1 ring-beige group-hover:ring-2 group-hover:ring-gold transition-all">
-                  <Image src={categoryImages[c] ?? ""} alt={c} fill sizes="96px" className="object-cover" />
+                <div className="relative h-24 w-24 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-full overflow-hidden ring-1 ring-beige group-hover:ring-2 group-hover:ring-gold transition-all">
+                  <Image src={categoryImages[c] ?? ""} alt={c} fill sizes="(min-width:1024px) 144px, (min-width:640px) 128px, 96px" className="object-cover" />
                 </div>
-                <span className="text-sm text-ink/80">{c}</span>
+                <span className="text-sm sm:text-base text-ink/80">{c}</span>
               </Link>
             ))}
           </section>
