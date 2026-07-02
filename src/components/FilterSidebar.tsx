@@ -67,10 +67,11 @@ function Pill({ label }: { label: string }) {
 type FilterSidebarProps = {
   priceMin: number;
   priceMax: number;
-  activeCategories?: string[]; // category slugs currently applied
+  activeCategories?: string[];
+  mobileMode?: boolean; // inside drawer — hide heading, remove sticky/border styles
 };
 
-export function FilterSidebar({ priceMin, priceMax, activeCategories = [] }: FilterSidebarProps) {
+export function FilterSidebar({ priceMin, priceMax, activeCategories = [], mobileMode = false }: FilterSidebarProps) {
   const router = useRouter();
 
   const toggleCategory = (slug: string) => {
@@ -85,9 +86,11 @@ export function FilterSidebar({ priceMin, priceMax, activeCategories = [] }: Fil
 
   return (
     <aside
-      className="w-full lg:w-64 shrink-0 rounded-xl border border-beige p-5 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto [scrollbar-width:thin] [scrollbar-color:var(--color-beige)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-beige [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"
+      className={mobileMode
+        ? "w-full"
+        : "w-64 shrink-0 rounded-xl border border-beige p-5 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto [scrollbar-width:thin] [scrollbar-color:var(--color-beige)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-beige [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent"}
     >
-      <h3 className="font-heading text-xl text-brand mb-4">Filters</h3>
+      {!mobileMode && <h3 className="font-heading text-xl text-brand mb-4">Filters</h3>}
 
       <FilterSection title="Category">
         {categories.map((c) => {
