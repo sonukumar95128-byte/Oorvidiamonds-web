@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export function ProductGallery({ images, alt }: { images: string[]; alt: string }) {
@@ -29,14 +28,7 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
           aria-label="Zoom image"
           className="absolute inset-0 cursor-zoom-in"
         >
-          <Image
-            src={images[active]}
-            alt={alt}
-            fill
-            sizes="(min-width: 1024px) 40vw, 90vw"
-            className="object-cover"
-            priority
-          />
+          <img src={images[active]} alt={alt} className="h-full w-full object-cover" />
         </button>
 
         <button
@@ -77,7 +69,7 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
               (i === active ? "border-gold" : "border-beige")
             }
           >
-            <Image src={img} alt={`${alt} thumbnail ${i + 1}`} fill sizes="64px" className="object-cover" />
+            <img src={img} alt={`${alt} thumbnail ${i + 1}`} className="h-full w-full object-cover" />
           </button>
         ))}
       </div>
@@ -110,7 +102,7 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
             className="relative w-full max-w-3xl aspect-square"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image src={images[active]} alt={alt} fill sizes="100vw" className="object-contain" />
+            <img src={images[active]} alt={alt} className="h-full w-full object-contain" />
           </div>
 
           <button
