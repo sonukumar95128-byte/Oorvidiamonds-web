@@ -50,7 +50,7 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-16">
         {/* Category circles */}
         {isOn("categories") && (
-          <section className="flex overflow-x-auto sm:overflow-visible sm:flex-wrap sm:justify-center gap-8 sm:gap-10 pb-2 sm:pb-0 scrollbar-hide">
+          <section className="flex overflow-x-auto sm:overflow-visible sm:flex-wrap sm:justify-center gap-8 sm:gap-10 pb-2 sm:pb-0 [&::-webkit-scrollbar]:hidden">
             {categories.map((c) => (
               <Link
                 key={c}
