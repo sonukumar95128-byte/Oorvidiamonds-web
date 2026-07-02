@@ -7,7 +7,6 @@ import { useAdmin, type HomepageSection } from "@/lib/admin-store";
 export default function HomepageBuilderPage() {
   const { homepageSections, toggleHomepageSection, reorderHomepageSections, newArrivalsSlugs, bestSellersSlugs } =
     useAdmin();
-  const [dragId, setDragId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
   const metaFor = (section: HomepageSection) => {
@@ -16,15 +15,12 @@ export default function HomepageBuilderPage() {
     return section.meta;
   };
 
-  const handleDrop = (targetId: string) => {
-    if (!dragId || dragId === targetId) return;
+  const moveSection = (index: number, direction: "up" | "down") => {
     const sections = [...homepageSections];
-    const fromIndex = sections.findIndex((s) => s.id === dragId);
-    const toIndex = sections.findIndex((s) => s.id === targetId);
-    const [moved] = sections.splice(fromIndex, 1);
-    sections.splice(toIndex, 0, moved as HomepageSection);
-    reorderHomepageSections(sections);
-    setDragId(null);
+    const swapWith = direction === "up" ? index - 1 : index + 1;
+    if (swapWith < 0 || swapWith >= sections.length) return;
+    [sections[index], sections[swapWith]] = [sections[swapWith], sections[index]];
+    reorderHomepageSections(sections as HomepageSection[]);
   };
 
   const handleSave = () => {
@@ -37,9 +33,6 @@ export default function HomepageBuilderPage() {
       <div className="flex items-start justify-between mb-1">
         <h1 className="font-heading italic text-3xl text-brand">Homepage builder</h1>
         <div className="flex items-center gap-2">
-          <button className="rounded-full border border-beige px-5 py-2 text-sm text-ink/70 hover:border-gold transition-colors">
-            Preview
-          </button>
           <button
             onClick={handleSave}
             className="rounded-full bg-brand px-5 py-2 text-sm font-medium text-gold-light hover:bg-brand-secondary transition-colors"
@@ -48,22 +41,33 @@ export default function HomepageBuilderPage() {
           </button>
         </div>
       </div>
-      <p className="text-sm text-ink/50 mb-6">Drag to reorder · toggle to show/hide · set each section&apos;s data source</p>
+      <p className="text-sm text-ink/50 mb-6">Use ↑↓ arrows to reorder · toggle to show/hide</p>
 
       <div className="rounded-xl border border-beige bg-white overflow-hidden divide-y divide-beige">
-        {homepageSections.map((section) => (
+        {homepageSections.map((section, index) => (
           <div
             key={section.id}
-            draggable
-            onDragStart={() => setDragId(section.id)}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => handleDrop(section.id)}
-            className={
-              "flex items-center gap-4 px-4 py-3 cursor-move transition-colors " +
-              (dragId === section.id ? "opacity-50" : "hover:bg-beige/30")
-            }
+            className="flex items-center gap-3 px-4 py-3 hover:bg-beige/30 transition-colors"
           >
-            <span className="text-ink/30 select-none">⠿</span>
+            {/* Up / Down buttons */}
+            <div className="flex flex-col gap-0.5 shrink-0">
+              <button
+                onClick={() => moveSection(index, "up")}
+                disabled={index === 0}
+                className="text-ink/30 hover:text-brand disabled:opacity-20 leading-none text-xs px-1"
+                aria-label="Move up"
+              >
+                ▲
+              </button>
+              <button
+                onClick={() => moveSection(index, "down")}
+                disabled={index === homepageSections.length - 1}
+                className="text-ink/30 hover:text-brand disabled:opacity-20 leading-none text-xs px-1"
+                aria-label="Move down"
+              >
+                ▼
+              </button>
+            </div>
 
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-brand">{section.label}</p>
@@ -97,10 +101,6 @@ export default function HomepageBuilderPage() {
                   (section.enabled ? "translate-x-4" : "translate-x-0.5")
                 }
               />
-            </button>
-
-            <button aria-label="Edit section" className="text-ink/40 hover:text-gold shrink-0">
-              ✎
             </button>
           </div>
         ))}
