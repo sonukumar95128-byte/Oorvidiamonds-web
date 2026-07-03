@@ -116,7 +116,7 @@ export default async function ProductDetailPage({
                 key={p.slug}
                 slug={p.slug}
                 image={p.image}
-                hoverImage={p.gallery?.[1]}
+                hoverImage={p.gallery && p.gallery.length > 1 ? p.gallery[p.gallery.length - 1] : undefined}
                 name={p.name}
                 price={p.price}
                 href={`/jewellery/${categoryToSlug(p.category)}/${p.slug}`}
