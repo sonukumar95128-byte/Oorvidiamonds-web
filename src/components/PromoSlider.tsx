@@ -42,12 +42,11 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
   return (
     <section className="w-full py-5 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center gap-3">
+        <div className="flex items-stretch gap-3">
 
           {/* Left peek */}
           <div
             className="hidden sm:block flex-shrink-0 w-[14%] rounded-2xl overflow-hidden cursor-pointer opacity-70 hover:opacity-85 transition-opacity duration-300 shadow-md"
-            style={{ aspectRatio: "8/3" }}
             onClick={() => goTo(active - 1)}
           >
             <img
@@ -111,7 +110,6 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
           {/* Right peek */}
           <div
             className="hidden sm:block flex-shrink-0 w-[14%] rounded-2xl overflow-hidden cursor-pointer opacity-70 hover:opacity-85 transition-opacity duration-300 shadow-md"
-            style={{ aspectRatio: "8/3" }}
             onClick={() => goTo(active + 1)}
           >
             <img
