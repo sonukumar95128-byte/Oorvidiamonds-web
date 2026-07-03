@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     // Serve from memory cache if fresh
     if (!key && cache && Date.now() - cache.at < CACHE_TTL_MS) {
       return NextResponse.json(cache.data, {
-        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30" },
+        headers: { "Cache-Control": "private, no-store" },
       });
     }
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     cache = { data: result, at: Date.now() };
 
     return NextResponse.json(result, {
-      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30" },
+      headers: { "Cache-Control": "private, no-store" },
     });
   } catch {
     return NextResponse.json(null, { status: 500 });
