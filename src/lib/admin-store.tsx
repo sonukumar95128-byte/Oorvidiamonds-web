@@ -39,6 +39,7 @@ export type PromoStrip = {
   title: string;
   link: string;
   image: string;
+  enabled?: boolean;
 };
 
 export type TestimonialStatus = "pending" | "approved" | "rejected";
@@ -105,7 +106,8 @@ const PRODUCTS_KEY = "lakshiraah-admin-products-v4";
 const ORDERS_KEY = "lakshiraah-admin-orders-v2";
 // v2: bumped after adding manageHref links to sections.
 const HOMEPAGE_KEY = "lakshiraah-admin-homepage-v3";
-const BANNERS_KEY = "lakshiraah-admin-banners";
+// v2: bumped after adding promo slider strips + enabled field.
+const BANNERS_KEY = "lakshiraah-admin-banners-v2";
 const TESTIMONIALS_KEY = "lakshiraah-admin-testimonials";
 // v2: productCount replaced with real productSlugs[] for collection-to-product linking.
 const COLLECTIONS_KEY = "lakshiraah-admin-collections-v2";
@@ -140,9 +142,10 @@ const seedHeroSlides: HeroSlideAdmin[] = heroSlides.map((s, i) => ({
 }));
 
 const seedPromoStrips: PromoStrip[] = [
-  { id: "top-of-home", position: "Top of home", title: "Festive sale — flat 20% off", link: "/jewellery?offer=true", image: productImages[6] },
-  { id: "mid-home", position: "Mid home", title: "Buy 2 get free gold polish", link: "/jewellery", image: productImages[2] },
-  { id: "product-page", position: "Single product page", title: "Buy 2, get free gold polish", link: "/jewellery", image: productImages[2] },
+  { id: "promo-slide-1", position: "Homepage slider", title: "New Collection — Explore Now", link: "/jewellery", image: productImages[6], enabled: true },
+  { id: "promo-slide-2", position: "Homepage slider", title: "Festive Sale — Flat 20% Off", link: "/jewellery?offer=true", image: productImages[2], enabled: true },
+  { id: "promo-slide-3", position: "Homepage slider", title: "Buy 2, Get Free Gold Polish", link: "/jewellery", image: productImages[4], enabled: true },
+  { id: "product-page", position: "Single product page", title: "Buy 2, get free gold polish", link: "/jewellery", image: productImages[2], enabled: true },
 ];
 
 const defaultPageBanners: Record<string, string> = {
@@ -257,6 +260,8 @@ type AdminContextValue = {
 
   promoStrips: PromoStrip[];
   updatePromoStrip: (id: string, updates: Partial<PromoStrip>) => void;
+  addPromoSlide: () => void;
+  deletePromoStrip: (id: string) => void;
 
   testimonials: AdminTestimonial[];
   setTestimonialStatus: (id: string, status: TestimonialStatus) => void;
@@ -549,6 +554,15 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setPromoStrips((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
   };
 
+  const addPromoSlide = () => {
+    const id = `promo-slide-${Date.now()}`;
+    setPromoStrips((prev) => [...prev, { id, position: "Homepage slider", title: "New slide", link: "/jewellery", image: productImages[0], enabled: true }]);
+  };
+
+  const deletePromoStrip = (id: string) => {
+    setPromoStrips((prev) => prev.filter((p) => p.id !== id));
+  };
+
   const setTestimonialStatus = (id: string, status: TestimonialStatus) => {
     setTestimonials((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
   };
@@ -633,6 +647,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         deleteHeroSlide,
         promoStrips,
         updatePromoStrip,
+        addPromoSlide,
+        deletePromoStrip,
         testimonials,
         setTestimonialStatus,
         toggleTestimonialFeatured,

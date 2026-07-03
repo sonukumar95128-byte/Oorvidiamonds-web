@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { CuratedProductGrid } from "@/components/CuratedProductGrid";
 import { HeroSlider } from "@/components/HeroSlider";
+import { PromoSlider } from "@/components/PromoSlider";
 import { SectionHeading } from "@/components/SectionHeading";
 import { StylingStories } from "@/components/StylingStories";
 import { useAdmin } from "@/lib/admin-store";
-import { categories, categoryToSlug, productImages, promoImage } from "@/lib/dummy-images";
+import { categories, categoryToSlug, productImages } from "@/lib/dummy-images";
 
 const trustBadges = [
   { icon: "✓", label: "Hallmarked", sub: "BIS certified" },
@@ -33,7 +34,7 @@ export default function Home() {
     .filter((s) => s.enabled)
     .map((s) => ({ image: s.image, href: s.link, alt: s.title }));
 
-  const midPromo = promoStrips.find((p) => p.id === "mid-home") ?? promoStrips[0];
+  const homeSlides = promoStrips.filter((p) => p.position === "Homepage slider" && p.enabled !== false);
 
   const liveCollections = collections.filter((c) => c.enabled);
 
@@ -79,25 +80,8 @@ export default function Home() {
         )}
       </div>
 
-      {/* Promo banner — full bleed */}
-      {isOn("offer-banner") && (
-        <section className="relative aspect-[16/5] w-full overflow-hidden flex items-center justify-end p-8">
-          <Image
-            src={midPromo?.image ?? promoImage}
-            alt={midPromo?.title ?? "Festive offer"}
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand/10 via-transparent to-brand/60" />
-          <Link
-            href={midPromo?.link ?? "/jewellery?offer=true"}
-            className="relative z-10 rounded-full bg-gold px-7 py-3 text-sm font-medium text-brand shadow hover:bg-gold-light transition-colors"
-          >
-            Shop offers
-          </Link>
-        </section>
-      )}
+      {/* Promo slider — full bleed */}
+      {isOn("offer-banner") && <PromoSlider slides={homeSlides} />}
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-16">
         {/* Best Sellers */}
