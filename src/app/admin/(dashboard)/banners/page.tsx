@@ -140,7 +140,11 @@ export default function AdminBannersPage() {
         {promoStrips.filter((s) => s.position === "Homepage slider").map((strip) => (
           <div key={strip.id} className="rounded-xl border border-beige bg-white p-4">
             <div className="relative aspect-[16/6] rounded-lg overflow-hidden bg-beige border border-beige mb-2">
-              <img src={strip.image} alt={strip.title} className="h-full w-full object-cover" />
+              {strip.image ? (
+                <img src={strip.image} alt={strip.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              ) : (
+                <div className="flex h-full items-center justify-center text-xs text-ink/30">No image — click Change image</div>
+              )}
             </div>
             <div className="mb-2">
               <BannerImagePicker value={strip.image} onChange={(image) => updatePromoStrip(strip.id, { image })} recommended="1600 × 600 px · promo slider (16:6 ratio)" />
@@ -183,7 +187,11 @@ export default function AdminBannersPage() {
       {promoStrips.filter((s) => s.id === "product-page").map((strip) => (
         <div key={strip.id} className="rounded-xl border border-beige bg-white p-4 max-w-sm mb-10">
           <div className="relative aspect-[16/6] rounded-lg overflow-hidden bg-beige border border-beige mb-2">
-            <img src={strip.image} alt={strip.title} className="h-full w-full object-cover" />
+            {strip.image ? (
+              <img src={strip.image} alt={strip.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            ) : (
+              <div className="flex h-full items-center justify-center text-xs text-ink/30">No image — click Change image</div>
+            )}
           </div>
           <div className="mb-2">
             <BannerImagePicker value={strip.image} onChange={(image) => updatePromoStrip(strip.id, { image })} recommended="1600 × 600 px · product page promo banner" />

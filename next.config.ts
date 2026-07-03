@@ -12,8 +12,8 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://lakshiraah.com https://pub-*.r2.dev https://blob.vercel-storage.com",
-      "connect-src 'self' https://api.razorpay.com https://lottie.host",
+      "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://lakshiraah.com https://pub-*.r2.dev https://blob.vercel-storage.com https://*.public.blob.vercel-storage.com",
+      "connect-src 'self' https://api.razorpay.com https://lottie.host https://*.public.blob.vercel-storage.com",
       "frame-src https://api.razorpay.com https://checkout.razorpay.com",
       "font-src 'self' https://fonts.gstatic.com",
     ].join("; "),
@@ -34,6 +34,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "lakshiraah.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
     ],
   },
 };

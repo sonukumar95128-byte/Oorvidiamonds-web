@@ -556,7 +556,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   const addPromoSlide = () => {
     const id = `promo-slide-${Date.now()}`;
-    setPromoStrips((prev) => [...prev, { id, position: "Homepage slider", title: "New slide", link: "/jewellery", image: productImages[0], enabled: true }]);
+    setPromoStrips((prev) => [...prev, { id, position: "Homepage slider", title: "New slide", link: "/jewellery", image: "", enabled: true }]);
   };
 
   const deletePromoStrip = (id: string) => {
