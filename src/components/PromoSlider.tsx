@@ -40,8 +40,8 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
   const nextIdx = (active + 1) % count;
 
   return (
-    <section className="w-full py-5 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto">
+    <section className="w-full py-5 px-3 sm:px-5">
+      <div className="w-full">
         <div className="flex items-stretch gap-3">
 
           {/* Left peek */}
