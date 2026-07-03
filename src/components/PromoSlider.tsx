@@ -4,6 +4,24 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { PromoStrip } from "@/lib/admin-store";
 
+function GlassArrow({ direction, onClick }: { direction: "left" | "right"; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={direction === "left" ? "Previous slide" : "Next slide"}
+      className={
+        "absolute top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full " +
+        "bg-white/20 backdrop-blur-md border border-white/30 text-white text-xl " +
+        "flex items-center justify-center hover:bg-white/35 active:scale-95 " +
+        "transition-all duration-200 shadow-lg " +
+        (direction === "left" ? "left-4 sm:left-6" : "right-4 sm:right-6")
+      }
+    >
+      {direction === "left" ? "‹" : "›"}
+    </button>
+  );
+}
+
 export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
   const [active, setActive] = useState(0);
 
@@ -22,119 +40,107 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
   const nextIdx = (active + 1) % count;
 
   return (
-    <section className="w-full overflow-hidden">
-      <div className="relative flex items-stretch">
+    <section className="w-full py-5 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center gap-3">
 
-        {/* Left edge peek */}
-        <div
-          className="hidden sm:block relative flex-shrink-0 w-[9%] cursor-pointer overflow-hidden"
-          onClick={() => goTo(active - 1)}
-        >
-          <img
-            src={slides[prevIdx].image}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "right center" }}
-          />
-          <div className="absolute inset-0 bg-black/30" />
-        </div>
-
-        {/* Center main slide */}
-        <div className="relative flex-1 aspect-[16/6]">
-          {slides.map((s, i) => (
-            <div
-              key={s.id}
-              className={
-                "absolute inset-0 transition-opacity duration-600 " +
-                (i === active ? "opacity-100 z-10" : "opacity-0 z-0")
-              }
-            >
-              <img src={s.image} alt={s.title} className="h-full w-full object-cover" />
-              {(s.title || s.link) && (
-                <>
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-transparent to-transparent" />
-                  <div className="absolute inset-0 flex items-end p-8 z-10">
-                    <div>
-                      {s.title && (
-                        <p className="font-heading italic text-2xl sm:text-3xl text-white drop-shadow mb-4">
-                          {s.title}
-                        </p>
-                      )}
-                      {s.link && s.link !== "#" && (
-                        <Link
-                          href={s.link}
-                          className="inline-block rounded-full border-2 border-white bg-white/10 backdrop-blur-sm px-7 py-2.5 text-sm font-semibold text-white tracking-wide hover:bg-white hover:text-brand transition-all duration-200"
-                        >
-                          SHOP NOW
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-
-          {/* Dots */}
-          {count > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-              {slides.map((_, i) => (
-                <button
-                  key={i}
-                  aria-label={`Slide ${i + 1}`}
-                  onClick={() => goTo(i)}
-                  className={
-                    "rounded-full transition-all duration-300 " +
-                    (i === active ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/50 hover:bg-white/80")
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Right edge peek */}
-        <div
-          className="hidden sm:block relative flex-shrink-0 w-[9%] cursor-pointer overflow-hidden"
-          onClick={() => goTo(active + 1)}
-        >
-          <img
-            src={slides[nextIdx].image}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-            style={{ objectPosition: "left center" }}
-          />
-          <div className="absolute inset-0 bg-black/30" />
-        </div>
-      </div>
-
-      {/* Arrows — outside the slide strip */}
-      {count > 1 && (
-        <div className="hidden sm:flex justify-between px-[9%] mt-4">
-          <button
-            aria-label="Previous"
+          {/* Left peek */}
+          <div
+            className="hidden sm:block flex-shrink-0 w-[14%] rounded-2xl overflow-hidden cursor-pointer opacity-70 hover:opacity-85 transition-opacity duration-300 shadow-md"
+            style={{ aspectRatio: "8/3" }}
             onClick={() => goTo(active - 1)}
-            className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-beige shadow-md text-brand text-lg hover:bg-beige transition-colors"
           >
-            ←
-          </button>
-          <button
-            aria-label="Next"
-            onClick={() => goTo(active + 1)}
-            className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-beige shadow-md text-brand text-lg hover:bg-beige transition-colors"
-          >
-            →
-          </button>
-        </div>
-      )}
+            <img
+              src={slides[prevIdx].image}
+              alt=""
+              className="h-full w-full object-cover"
+              style={{ objectPosition: "right center" }}
+            />
+          </div>
 
-      {/* Mobile arrows */}
-      {count > 1 && (
-        <div className="sm:hidden flex justify-center gap-4 mt-3">
-          <button onClick={() => goTo(active - 1)} className="h-9 w-9 flex items-center justify-center rounded-full bg-white border border-beige shadow text-brand">←</button>
-          <button onClick={() => goTo(active + 1)} className="h-9 w-9 flex items-center justify-center rounded-full bg-white border border-beige shadow text-brand">→</button>
+          {/* Center main slide */}
+          <div className="relative flex-1 rounded-3xl overflow-hidden shadow-xl" style={{ aspectRatio: "8/3" }}>
+            {slides.map((s, i) => (
+              <div
+                key={s.id}
+                className={
+                  "absolute inset-0 transition-opacity duration-500 " +
+                  (i === active ? "opacity-100 z-10" : "opacity-0 z-0")
+                }
+              >
+                <img src={s.image} alt={s.title} className="h-full w-full object-cover" />
+                {s.title && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+                    <div className="absolute bottom-6 left-8 z-10">
+                      <p className="font-heading italic text-xl sm:text-2xl text-white drop-shadow">
+                        {s.title}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+
+            {/* Same GlassArrow as hero */}
+            {count > 1 && (
+              <>
+                <GlassArrow direction="left" onClick={() => goTo(active - 1)} />
+                <GlassArrow direction="right" onClick={() => goTo(active + 1)} />
+              </>
+            )}
+
+            {/* Dots */}
+            {count > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    aria-label={`Slide ${i + 1}`}
+                    onClick={() => goTo(i)}
+                    className={
+                      "rounded-full transition-all duration-300 " +
+                      (i === active ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/50 hover:bg-white/80")
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right peek */}
+          <div
+            className="hidden sm:block flex-shrink-0 w-[14%] rounded-2xl overflow-hidden cursor-pointer opacity-70 hover:opacity-85 transition-opacity duration-300 shadow-md"
+            style={{ aspectRatio: "8/3" }}
+            onClick={() => goTo(active + 1)}
+          >
+            <img
+              src={slides[nextIdx].image}
+              alt=""
+              className="h-full w-full object-cover"
+              style={{ objectPosition: "left center" }}
+            />
+          </div>
+
         </div>
-      )}
+
+        {/* Dots mobile */}
+        {count > 1 && (
+          <div className="sm:hidden flex justify-center gap-2 mt-3">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Slide ${i + 1}`}
+                onClick={() => goTo(i)}
+                className={
+                  "rounded-full transition-all duration-300 " +
+                  (i === active ? "w-6 h-2 bg-brand" : "w-2 h-2 bg-brand/30")
+                }
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
