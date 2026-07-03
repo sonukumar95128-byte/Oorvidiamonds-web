@@ -39,7 +39,7 @@ export default function AdminBannersPage() {
               <div className="relative h-14 w-20 rounded-lg overflow-hidden bg-beige border border-beige mb-1">
                 <Image src={slide.image} alt={slide.title} fill sizes="80px" className="object-cover" />
               </div>
-              <BannerImagePicker value={slide.image} onChange={(image) => updateHeroSlide(slide.id, { image })} />
+              <BannerImagePicker value={slide.image} onChange={(image) => updateHeroSlide(slide.id, { image })} recommended="1920 × 700 px · full-width hero banner" />
             </div>
 
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -102,6 +102,7 @@ export default function AdminBannersPage() {
             <BannerImagePicker
               value={categoryImages[cat]}
               onChange={(url) => updateCategoryImage(cat, url)}
+              recommended="400 × 400 px · square circle image"
             />
           </div>
         ))}
@@ -119,7 +120,7 @@ export default function AdminBannersPage() {
               )}
             </div>
             <p className="text-xs font-medium text-brand mb-2">{label}</p>
-            <BannerImagePicker value={pageBanners[id] ?? ""} onChange={(url) => updatePageBanner(id, url)} />
+            <BannerImagePicker value={pageBanners[id] ?? ""} onChange={(url) => updatePageBanner(id, url)} recommended="1600 × 400 px · page top banner (4:1 ratio)" />
           </div>
         ))}
       </div>
@@ -142,7 +143,7 @@ export default function AdminBannersPage() {
               <img src={strip.image} alt={strip.title} className="h-full w-full object-cover" />
             </div>
             <div className="mb-2">
-              <BannerImagePicker value={strip.image} onChange={(image) => updatePromoStrip(strip.id, { image })} />
+              <BannerImagePicker value={strip.image} onChange={(image) => updatePromoStrip(strip.id, { image })} recommended="1600 × 600 px · promo slider (16:6 ratio)" />
             </div>
             <div className="flex gap-2 mb-2">
               <input
@@ -185,7 +186,7 @@ export default function AdminBannersPage() {
             <img src={strip.image} alt={strip.title} className="h-full w-full object-cover" />
           </div>
           <div className="mb-2">
-            <BannerImagePicker value={strip.image} onChange={(image) => updatePromoStrip(strip.id, { image })} />
+            <BannerImagePicker value={strip.image} onChange={(image) => updatePromoStrip(strip.id, { image })} recommended="1600 × 600 px · product page promo banner" />
           </div>
           <input
             value={strip.title}

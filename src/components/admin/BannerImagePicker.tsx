@@ -7,13 +7,12 @@ import { useAdmin } from "@/lib/admin-store";
 type BannerImagePickerProps = {
   value: string;
   onChange: (image: string) => void;
+  recommended?: string;
 };
 
 type Tab = "upload" | "products";
 
-const RECOMMENDED = "1920 × 700 px (hero slider) · 1600 × 500 px (promo strip)";
-
-export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
+export function BannerImagePicker({ value, onChange, recommended }: BannerImagePickerProps) {
   const { products } = useAdmin();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<Tab>("upload");
@@ -34,7 +33,7 @@ export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
       const form = new FormData();
       form.append("file", file);
 
-      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const res = await fetch("/api/upload", { method: "POST", body: form, credentials: "same-origin" });
       const data = await res.json();
 
       if (!res.ok) {
@@ -93,7 +92,7 @@ export function BannerImagePicker({ value, onChange }: BannerImagePickerProps) {
               <div>
                 <div className="mb-3 rounded-lg bg-beige/50 px-3 py-2 text-xs text-ink/60 leading-relaxed">
                   <p className="font-medium text-brand mb-0.5">Recommended size</p>
-                  <p>{RECOMMENDED}</p>
+                  <p>{recommended ?? "1920 × 700 px"}</p>
                   <p className="mt-0.5">Format: JPG · PNG · WebP · Max 5 MB</p>
                 </div>
 
