@@ -60,12 +60,12 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
         </div>
 
         {/* Center — main slide with slide animation */}
-        <div className="relative flex-1 rounded-2xl overflow-hidden shadow-xl">
+        <div className="relative flex-1 rounded-2xl overflow-hidden shadow-xl cursor-default">
           {slides.map((s, i) => (
             <div
               key={s.id}
               className={
-                "absolute inset-0 transition-transform duration-500 ease-in-out " +
+                "absolute inset-0 transition-transform duration-500 ease-in-out pointer-events-none " +
                 (i === active
                   ? "translate-x-0 z-10"                                          // active: center
                   : i === prev
@@ -99,7 +99,7 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
 
           {/* Dots */}
           {count > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 pointer-events-auto">
               {slides.map((_, i) => (
                 <button
                   key={i}
