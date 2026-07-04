@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { PromoStrip } from "@/lib/admin-store";
 
 function GlassArrow({ direction, onClick }: { direction: "left" | "right"; onClick: () => void }) {
@@ -21,108 +21,112 @@ function GlassArrow({ direction, onClick }: { direction: "left" | "right"; onCli
   );
 }
 
-const SLIDE_WIDTH_RATIO = 0.70; // center 70%, so each side = ~12-13% visible + gap
-const GAP = 20; // px gap between slides
+const GAP = 20;
 
 export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
-  const [active, setActive] = useState(0);
-  const [translateX, setTranslateX] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const count = slides.length;
+  const [active, setActive] = useState(0);
+  const [slideW, setSlideW] = useState(0);
+  const [txX, setTxX] = useState(0);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const calcTranslate = (idx: number, containerW: number) => {
-    const slideW = containerW * SLIDE_WIDTH_RATIO;
-    const centerOffset = (containerW - slideW) / 2;
-    return centerOffset - idx * (slideW + GAP);
+  // Compute pixel dimensions from container
+  const compute = (idx: number, el?: HTMLDivElement | null) => {
+    const container = el ?? wrapRef.current;
+    const w = container?.offsetWidth ?? 0;
+    if (!w) return;
+    const sw = Math.floor(w * 0.70);          // center slide = 70%
+    const start = Math.floor((w - sw) / 2);   // ~15% on each side
+    const tx = start - idx * (sw + GAP);
+    setSlideW(sw);
+    setTxX(tx);
   };
 
-  const applyTranslate = (idx: number) => {
-    const w = containerRef.current?.offsetWidth ?? 0;
-    if (w) setTranslateX(calcTranslate(idx, w));
-  };
-
-  const resetTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (count <= 1) return;
-    timerRef.current = setInterval(() => {
-      setActive((prev) => {
-        const next = (prev + 1) % count;
-        applyTranslate(next);
-        return next;
-      });
-    }, 4500);
-  };
-
-  useEffect(() => {
-    applyTranslate(active);
+  useLayoutEffect(() => {
+    compute(active);
   }, [active]);
 
   useEffect(() => {
-    resetTimer();
+    const el = wrapRef.current;
+    if (!el) return;
+    compute(0, el);
+
     const ro = new ResizeObserver(() => {
-      setActive((cur) => { applyTranslate(cur); return cur; });
+      setActive((cur) => { compute(cur, el); return cur; });
     });
-    if (containerRef.current) ro.observe(containerRef.current);
-    return () => {
-      ro.disconnect();
+    ro.observe(el);
+
+    const startTimer = () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setActive((cur) => { const next = (cur + 1) % count; compute(next, el); return next; });
+      }, 4500);
     };
+    startTimer();
+
+    return () => { ro.disconnect(); if (timerRef.current) clearInterval(timerRef.current); };
   }, [count]);
 
   const goTo = (i: number) => {
     const target = (i + count) % count;
     setActive(target);
-    applyTranslate(target);
-    resetTimer();
+    // compute will fire via useLayoutEffect
+    if (timerRef.current) clearInterval(timerRef.current);
+    const el = wrapRef.current;
+    timerRef.current = setInterval(() => {
+      setActive((cur) => { const next = (cur + 1) % count; compute(next, el); return next; });
+    }, 4500);
   };
 
   if (count === 0) return null;
 
-  const slideWidthPct = SLIDE_WIDTH_RATIO * 100;
-
   return (
     <section className="w-full py-5">
-      {/* Outer clip */}
-      <div ref={containerRef} className="relative w-full overflow-hidden" style={{ aspectRatio: "16/6" }}>
+      {/* Container — clips overflow, defines height via aspect ratio */}
+      <div
+        ref={wrapRef}
+        className="relative w-full overflow-hidden"
+        style={{ aspectRatio: "16/6" }}
+      >
+        {slideW > 0 && (
+          /* Track — slides sit side by side in a row, whole row moves */
+          <div
+            className="absolute top-0 left-0 h-full flex"
+            style={{
+              gap: `${GAP}px`,
+              transform: `translateX(${txX}px)`,
+              transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            }}
+          >
+            {slides.map((s, i) => (
+              <div
+                key={s.id}
+                className={
+                  "relative flex-shrink-0 h-full rounded-2xl overflow-hidden cursor-pointer " +
+                  "transition-opacity duration-300 " +
+                  (i === active ? "opacity-100" : "opacity-65 hover:opacity-80")
+                }
+                style={{ width: `${slideW}px` }}
+                onClick={() => i !== active && goTo(i)}
+              >
+                <img src={s.image} alt={s.title} className="h-full w-full object-cover" />
+                {s.title && i === active && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+                    <div className="absolute bottom-6 left-8 z-10">
+                      <p className="font-heading italic text-xl sm:text-2xl text-white drop-shadow">
+                        {s.title}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
-        {/* Sliding track — all slides in a row */}
-        <div
-          className="absolute top-0 left-0 h-full flex"
-          style={{
-            gap: `${GAP}px`,
-            transform: `translateX(${translateX}px)`,
-            transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-            width: `calc(${count} * ${slideWidthPct}% + ${(count - 1) * GAP}px)`,
-          }}
-        >
-          {slides.map((s, i) => (
-            <div
-              key={s.id}
-              className={
-                "relative h-full flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer " +
-                "transition-opacity duration-300 " +
-                (i === active ? "opacity-100" : "opacity-70 hover:opacity-85")
-              }
-              style={{ width: `${slideWidthPct}%` }}
-              onClick={() => i !== active && goTo(i)}
-            >
-              <img src={s.image} alt={s.title} className="h-full w-full object-cover" />
-              {s.title && i === active && (
-                <>
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
-                  <div className="absolute bottom-6 left-8 z-10">
-                    <p className="font-heading italic text-xl sm:text-2xl text-white drop-shadow">
-                      {s.title}
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Glass arrows — centered on active slide area */}
+        {/* Glass arrows */}
         {count > 1 && (
           <>
             <GlassArrow direction="left" onClick={() => goTo(active - 1)} />
