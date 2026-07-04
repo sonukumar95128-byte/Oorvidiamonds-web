@@ -6,7 +6,8 @@ import type { PromoStrip } from "@/lib/admin-store";
 export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
   const count = slides.length;
   const [active, setActive] = useState(0);
-  const [animDir, setAnimDir] = useState<"left" | "right" | null>(null);
+  const [prev, setPrev] = useState<number | null>(null);
+  const [animDir, setAnimDir] = useState<"left" | "right">("right");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startTimer = () => {
@@ -22,7 +23,10 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
 
   const navigate = (dir: "left" | "right") => {
     setAnimDir(dir);
-    setActive((prev) => dir === "right" ? (prev + 1) % count : (prev - 1 + count) % count);
+    setActive((cur) => {
+      setPrev(cur);
+      return dir === "right" ? (cur + 1) % count : (cur - 1 + count) % count;
+    });
     startTimer();
   };
 
@@ -63,10 +67,12 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
               className={
                 "absolute inset-0 transition-transform duration-500 ease-in-out " +
                 (i === active
-                  ? "translate-x-0 z-10"
-                  : i === (active - 1 + count) % count
-                    ? (animDir === "right" ? "-translate-x-full z-0" : "translate-x-full z-0")
-                    : "translate-x-full z-0")
+                  ? "translate-x-0 z-10"                                          // active: center
+                  : i === prev
+                    ? (animDir === "right" ? "-translate-x-full z-0"              // prev exits left
+                                           : "translate-x-full z-0")             // prev exits right
+                    : animDir === "right" ? "translate-x-full z-0"               // others wait right
+                                         : "-translate-x-full z-0")             // others wait left
               }
             >
               <img src={s.image} alt={s.title} className="h-full w-full object-cover" />
@@ -97,7 +103,7 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
               {slides.map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => { setAnimDir(i > active ? "right" : "left"); setActive(i); startTimer(); }}
+                  onClick={() => { const dir = i > active ? "right" : "left"; setAnimDir(dir); setPrev(active); setActive(i); startTimer(); }}
                   className={"rounded-full transition-all duration-300 " + (i === active ? "w-6 h-2 bg-white" : "w-2 h-2 bg-white/50")}
                 />
               ))}
