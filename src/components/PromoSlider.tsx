@@ -40,13 +40,13 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
   const nextIdx = (active + 1) % count;
 
   return (
-    <section className="w-full py-5 px-3 sm:px-5">
+    <section className="w-full py-5">
       <div className="w-full">
-        <div className="flex items-stretch gap-3">
+        <div className="flex items-stretch gap-0">
 
           {/* Left peek */}
           <div
-            className="hidden sm:block flex-shrink-0 w-[14%] rounded-2xl overflow-hidden cursor-pointer opacity-70 hover:opacity-85 transition-opacity duration-300 shadow-md"
+            className="hidden sm:block flex-shrink-0 w-[18%] rounded-l-2xl overflow-hidden cursor-pointer opacity-80 hover:opacity-90 transition-opacity duration-300"
             onClick={() => goTo(active - 1)}
           >
             <img
@@ -58,7 +58,7 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
           </div>
 
           {/* Center main slide */}
-          <div className="relative flex-1 rounded-3xl overflow-hidden shadow-xl" style={{ aspectRatio: "8/3" }}>
+          <div className="relative flex-1 overflow-hidden shadow-xl" style={{ aspectRatio: "8/3" }}>
             {slides.map((s, i) => (
               <div
                 key={s.id}
@@ -109,7 +109,7 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
 
           {/* Right peek */}
           <div
-            className="hidden sm:block flex-shrink-0 w-[14%] rounded-2xl overflow-hidden cursor-pointer opacity-70 hover:opacity-85 transition-opacity duration-300 shadow-md"
+            className="hidden sm:block flex-shrink-0 w-[18%] rounded-r-2xl overflow-hidden cursor-pointer opacity-80 hover:opacity-90 transition-opacity duration-300"
             onClick={() => goTo(active + 1)}
           >
             <img
