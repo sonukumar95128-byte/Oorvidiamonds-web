@@ -33,11 +33,11 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
 
   return (
     <section className="w-full py-4">
-      <div className="flex items-stretch w-full rounded-2xl overflow-hidden shadow-lg" style={{ aspectRatio: "16/6" }}>
+      <div className="flex items-stretch w-full gap-3 px-3" style={{ aspectRatio: "16/6" }}>
 
         {/* Left strip — prev slide edge + arrow */}
         <div
-          className="hidden sm:flex relative flex-shrink-0 w-[10%] cursor-pointer items-center justify-center bg-black/10"
+          className="hidden sm:flex relative flex-shrink-0 w-[15%] cursor-pointer items-center justify-center rounded-2xl overflow-hidden"
           onClick={() => navigate("left")}
         >
           <img
@@ -56,7 +56,7 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
         </div>
 
         {/* Center — main slide with slide animation */}
-        <div className="relative flex-1 overflow-hidden">
+        <div className="relative flex-1 rounded-2xl overflow-hidden shadow-xl">
           {slides.map((s, i) => (
             <div
               key={s.id}
@@ -107,7 +107,7 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
 
         {/* Right strip — next slide edge + arrow */}
         <div
-          className="hidden sm:flex relative flex-shrink-0 w-[10%] cursor-pointer items-center justify-center bg-black/10"
+          className="hidden sm:flex relative flex-shrink-0 w-[15%] cursor-pointer items-center justify-center rounded-2xl overflow-hidden"
           onClick={() => navigate("right")}
         >
           <img
