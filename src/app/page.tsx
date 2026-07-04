@@ -6,9 +6,9 @@ import { CuratedProductGrid } from "@/components/CuratedProductGrid";
 import { HeroSlider } from "@/components/HeroSlider";
 import { PromoSlider } from "@/components/PromoSlider";
 import { SectionHeading } from "@/components/SectionHeading";
-import { StylingStories } from "@/components/StylingStories";
+import { ReelsSection } from "@/components/ReelsSection";
 import { useAdmin } from "@/lib/admin-store";
-import { categories, categoryToSlug, productImages } from "@/lib/dummy-images";
+import { categories, categoryToSlug } from "@/lib/dummy-images";
 
 const trustBadges = [
   { icon: "✓", label: "Hallmarked", sub: "BIS certified" },
@@ -26,6 +26,7 @@ export default function Home() {
     homepageSections,
     collections,
     testimonials,
+    reels,
   } = useAdmin();
 
   const isOn = (id: string) => homepageSections.find((s) => s.id === id)?.enabled ?? true;
@@ -96,14 +97,14 @@ export default function Home() {
           </section>
         )}
 
-        {/* Styling stories */}
-        {isOn("reels") && (
+        {/* Video Reels */}
+        {isOn("reels") && reels.filter((r) => r.enabled).length > 0 && (
           <section>
             <SectionHeading
-              title="Styling stories"
-              subtitle={`Showing 4 of ${productImages.length} reels — slide for more`}
+              title="Styling Reels"
+              subtitle="Watch our jewellery in action"
             />
-            <StylingStories images={[...productImages, ...productImages]} />
+            <ReelsSection reels={reels} />
           </section>
         )}
 

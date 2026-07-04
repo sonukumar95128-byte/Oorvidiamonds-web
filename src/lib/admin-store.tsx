@@ -85,6 +85,14 @@ export type AdminCoupon = {
   active: boolean;
 };
 
+export type AdminReel = {
+  id: string;
+  title: string;
+  videoUrl: string;
+  thumbnail?: string;
+  enabled: boolean;
+};
+
 export type SiteSettings = {
   goldRatePerGram: number; // 22kt, ₹/g
   goldRateMode: "auto" | "manual";
@@ -118,6 +126,7 @@ const NEW_ARRIVALS_KEY = "lakshiraah-admin-new-arrivals";
 const BEST_SELLERS_KEY = "lakshiraah-admin-best-sellers";
 const CATEGORY_IMAGES_KEY = "lakshiraah-admin-category-images";
 const PAGE_BANNERS_KEY = "lakshiraah-admin-page-banners";
+const REELS_KEY = "lakshiraah-admin-reels";
 
 const seedProducts: AdminProduct[] = dummyProducts;
 
@@ -127,7 +136,7 @@ const seedHomepageSections: HomepageSection[] = [
   { id: "best-sellers", label: "Best Sellers", meta: "8 products shown", manageLabel: "Choose products →", manageHref: "/admin/homepage/best-sellers", enabled: true },
   { id: "offer-banner", label: "Offer banner", meta: "links to /offers", manageLabel: "Edit banner & link →", manageHref: "/admin/banners", enabled: true },
   { id: "new-arrivals", label: "New Arrivals", meta: "8 products shown", manageLabel: "Choose products →", manageHref: "/admin/homepage/new-arrivals", enabled: true },
-  { id: "reels", label: "Styling reels", meta: "9 reels · shows 4", manageLabel: "Manage reels →", enabled: true },
+  { id: "reels", label: "Video Reels", meta: "Short videos", manageLabel: "Manage reels →", manageHref: "/admin/reels", enabled: true },
   { id: "collections", label: "Shop by collection", meta: "3 collections", manageLabel: "Choose collections →", manageHref: "/admin/collections", enabled: true },
   { id: "testimonials", label: "Testimonials", meta: "3 approved", manageLabel: "Manage testimonials →", manageHref: "/admin/testimonials", enabled: true },
   { id: "trust-badges", label: "Trust badges", meta: "4 badges", manageLabel: "Edit badges →", enabled: false },
@@ -300,6 +309,12 @@ type AdminContextValue = {
 
   pageBanners: Record<string, string>;
   updatePageBanner: (pageId: string, url: string) => void;
+
+  reels: AdminReel[];
+  addReel: () => void;
+  updateReel: (id: string, updates: Partial<AdminReel>) => void;
+  toggleReel: (id: string) => void;
+  deleteReel: (id: string) => void;
 };
 
 const AdminContext = createContext<AdminContextValue | null>(null);
@@ -627,6 +642,35 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setPageBanners((prev) => ({ ...prev, [pageId]: url }));
   };
 
+  const [reels, setReels] = useState<AdminReel[]>([]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = localStorage.getItem(REELS_KEY);
+      if (stored) setReels(JSON.parse(stored));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(REELS_KEY, JSON.stringify(reels));
+  }, [reels, hydrated]);
+
+  const addReel = () => {
+    const id = `reel-${Date.now()}`;
+    setReels((prev) => [...prev, { id, title: "", videoUrl: "", enabled: true }]);
+  };
+  const updateReel = (id: string, updates: Partial<AdminReel>) => {
+    setReels((prev) => prev.map((r) => (r.id === id ? { ...r, ...updates } : r)));
+  };
+  const toggleReel = (id: string) => {
+    setReels((prev) => prev.map((r) => (r.id === id ? { ...r, enabled: !r.enabled } : r)));
+  };
+  const deleteReel = (id: string) => {
+    setReels((prev) => prev.filter((r) => r.id !== id));
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -679,6 +723,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         updateCategoryImage,
         pageBanners,
         updatePageBanner,
+        reels,
+        addReel,
+        updateReel,
+        toggleReel,
+        deleteReel,
       }}
     >
       {children}

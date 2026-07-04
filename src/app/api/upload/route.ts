@@ -9,9 +9,13 @@ const ALLOWED_TYPES: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
   "image/avif": "avif",
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+  "video/quicktime": "mov",
 };
 
-const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;   // 5 MB
+const MAX_VIDEO_BYTES = 100 * 1024 * 1024; // 100 MB
 
 export async function POST(request: NextRequest) {
   const jar = await cookies();
@@ -31,8 +35,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only JPG, PNG, WebP, or AVIF images are allowed." }, { status: 400 });
     }
 
-    if (file.size > MAX_SIZE_BYTES) {
-      return NextResponse.json({ error: "File too large — maximum 5 MB." }, { status: 400 });
+    const isVideo = file.type.startsWith("video/");
+    const maxSize = isVideo ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+    if (file.size > maxSize) {
+      return NextResponse.json({ error: `File too large — maximum ${isVideo ? "100 MB" : "5 MB"}.` }, { status: 400 });
     }
 
     const ext = ALLOWED_TYPES[file.type];
