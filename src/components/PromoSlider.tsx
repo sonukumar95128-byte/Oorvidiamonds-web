@@ -21,53 +21,89 @@ function GlassArrow({ direction, onClick }: { direction: "left" | "right"; onCli
   );
 }
 
+const SLIDE_WIDTH_RATIO = 0.70; // center slide = 70% of container
+const GAP = 16; // px gap between slides
+
 export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
   const [active, setActive] = useState(0);
-  const count = slides.length;
+  const [translateX, setTranslateX] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const count = slides.length;
+
+  const calcTranslate = (idx: number, containerW: number) => {
+    const slideW = containerW * SLIDE_WIDTH_RATIO;
+    const centerOffset = (containerW - slideW) / 2;
+    return centerOffset - idx * (slideW + GAP);
+  };
+
+  const applyTranslate = (idx: number) => {
+    const w = containerRef.current?.offsetWidth ?? 0;
+    if (w) setTranslateX(calcTranslate(idx, w));
+  };
 
   const resetTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (count <= 1) return;
     timerRef.current = setInterval(() => {
-      setActive((prev) => (prev + 1) % count);
+      setActive((prev) => {
+        const next = (prev + 1) % count;
+        applyTranslate(next);
+        return next;
+      });
     }, 4500);
   };
 
   useEffect(() => {
+    applyTranslate(active);
     resetTimer();
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    const ro = new ResizeObserver(() => applyTranslate(active));
+    if (containerRef.current) ro.observe(containerRef.current);
+    return () => {
+      ro.disconnect();
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [count]);
 
   const goTo = (i: number) => {
-    setActive((i + count) % count);
+    const target = (i + count) % count;
+    setActive(target);
+    applyTranslate(target);
     resetTimer();
   };
 
   if (count === 0) return null;
 
+  const slideWidthPct = SLIDE_WIDTH_RATIO * 100;
+
   return (
-    <section className="w-full py-4 px-3 sm:px-5">
-      <div
-        className="relative w-full rounded-2xl overflow-hidden shadow-xl"
-        style={{ aspectRatio: "16/6" }}
-      >
-        {/* Full sliding track — all slides side by side, shifts on active */}
+    <section className="w-full py-5">
+      {/* Outer clip */}
+      <div ref={containerRef} className="relative w-full overflow-hidden" style={{ aspectRatio: "16/6" }}>
+
+        {/* Sliding track — all slides in a row */}
         <div
-          className="absolute inset-0 flex transition-transform duration-500 ease-in-out"
+          className="absolute top-0 left-0 h-full flex"
           style={{
-            width: `${count * 100}%`,
-            transform: `translateX(-${(active * 100) / count}%)`,
+            gap: `${GAP}px`,
+            transform: `translateX(${translateX}px)`,
+            transition: "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            width: `calc(${count} * ${slideWidthPct}% + ${(count - 1) * GAP}px)`,
           }}
         >
-          {slides.map((s) => (
+          {slides.map((s, i) => (
             <div
               key={s.id}
-              className="relative h-full flex-shrink-0"
-              style={{ width: `${100 / count}%` }}
+              className={
+                "relative h-full flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer " +
+                "transition-opacity duration-300 " +
+                (i === active ? "opacity-100" : "opacity-70 hover:opacity-85")
+              }
+              style={{ width: `${slideWidthPct}%` }}
+              onClick={() => i !== active && goTo(i)}
             >
               <img src={s.image} alt={s.title} className="h-full w-full object-cover" />
-              {s.title && (
+              {s.title && i === active && (
                 <>
                   <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
                   <div className="absolute bottom-6 left-8 z-10">
@@ -81,7 +117,7 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
           ))}
         </div>
 
-        {/* Glass arrows */}
+        {/* Glass arrows — centered on active slide area */}
         {count > 1 && (
           <>
             <GlassArrow direction="left" onClick={() => goTo(active - 1)} />
