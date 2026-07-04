@@ -21,8 +21,8 @@ function GlassArrow({ direction, onClick }: { direction: "left" | "right"; onCli
   );
 }
 
-const SLIDE_WIDTH_RATIO = 0.70; // center slide = 70% of container
-const GAP = 16; // px gap between slides
+const SLIDE_WIDTH_RATIO = 0.70; // center 70%, so each side = ~12-13% visible + gap
+const GAP = 20; // px gap between slides
 
 export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
   const [active, setActive] = useState(0);
@@ -56,8 +56,13 @@ export function PromoSlider({ slides }: { slides: PromoStrip[] }) {
 
   useEffect(() => {
     applyTranslate(active);
+  }, [active]);
+
+  useEffect(() => {
     resetTimer();
-    const ro = new ResizeObserver(() => applyTranslate(active));
+    const ro = new ResizeObserver(() => {
+      setActive((cur) => { applyTranslate(cur); return cur; });
+    });
     if (containerRef.current) ro.observe(containerRef.current);
     return () => {
       ro.disconnect();
