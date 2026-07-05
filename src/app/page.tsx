@@ -10,12 +10,6 @@ import { ReelsSection } from "@/components/ReelsSection";
 import { useAdmin } from "@/lib/admin-store";
 import { categories, categoryToSlug } from "@/lib/dummy-images";
 
-const trustBadges = [
-  { icon: "✓", label: "Hallmarked", sub: "BIS certified" },
-  { icon: "🚚", label: "Free shipping", sub: "Over ₹999" },
-  { icon: "↺", label: "15-day returns", sub: "Easy & free" },
-  { icon: "♾", label: "Lifetime exchange", sub: "Buyback support" },
-];
 export default function Home() {
   const {
     newArrivalsSlugs,
@@ -27,6 +21,7 @@ export default function Home() {
     collections,
     testimonials,
     reels,
+    trustBadges,
   } = useAdmin();
 
   const isOn = (id: string) => homepageSections.find((s) => s.id === id)?.enabled ?? true;
@@ -136,8 +131,8 @@ export default function Home() {
         {/* Trust badges */}
         {isOn("trust-badges") && (
           <section className="grid grid-cols-2 sm:grid-cols-4 gap-6 rounded-xl bg-brand py-10 px-4">
-            {trustBadges.map((b) => (
-              <div key={b.label} className="flex flex-col items-center text-center gap-2">
+            {trustBadges.filter((b) => b.enabled).map((b) => (
+              <div key={b.id} className="flex flex-col items-center text-center gap-2">
                 <span className="grid h-12 w-12 place-items-center rounded-full border border-gold/40 text-xl text-gold-light">
                   {b.icon}
                 </span>

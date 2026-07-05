@@ -93,6 +93,14 @@ export type AdminReel = {
   enabled: boolean;
 };
 
+export type TrustBadge = {
+  id: string;
+  icon: string;
+  label: string;
+  sub: string;
+  enabled: boolean;
+};
+
 export type SiteSettings = {
   goldRatePerGram: number; // 22kt, ₹/g
   goldRateMode: "auto" | "manual";
@@ -127,6 +135,14 @@ const BEST_SELLERS_KEY = "lakshiraah-admin-best-sellers";
 const CATEGORY_IMAGES_KEY = "lakshiraah-admin-category-images";
 const PAGE_BANNERS_KEY = "lakshiraah-admin-page-banners";
 const REELS_KEY = "lakshiraah-admin-reels";
+const TRUST_BADGES_KEY = "lakshiraah-trust-badges";
+
+const seedTrustBadges: TrustBadge[] = [
+  { id: "badge-1", icon: "✓", label: "Hallmarked", sub: "BIS certified", enabled: true },
+  { id: "badge-2", icon: "🚚", label: "Free shipping", sub: "Over ₹999", enabled: true },
+  { id: "badge-3", icon: "↺", label: "15-day returns", sub: "Easy & free", enabled: true },
+  { id: "badge-4", icon: "♾", label: "Lifetime exchange", sub: "Buyback support", enabled: true },
+];
 
 const seedProducts: AdminProduct[] = dummyProducts;
 
@@ -139,7 +155,7 @@ const seedHomepageSections: HomepageSection[] = [
   { id: "reels", label: "Video Reels", meta: "Short videos", manageLabel: "Manage reels →", manageHref: "/admin/reels", enabled: true },
   { id: "collections", label: "Shop by collection", meta: "3 collections", manageLabel: "Choose collections →", manageHref: "/admin/collections", enabled: true },
   { id: "testimonials", label: "Testimonials", meta: "3 approved", manageLabel: "Manage testimonials →", manageHref: "/admin/testimonials", enabled: true },
-  { id: "trust-badges", label: "Trust badges", meta: "4 badges", manageLabel: "Edit badges →", enabled: false },
+  { id: "trust-badges", label: "Trust badges", meta: "4 badges", manageLabel: "Edit badges →", manageHref: "/admin/trust-badges", enabled: true },
 ];
 
 const seedHeroSlides: HeroSlideAdmin[] = heroSlides.map((s, i) => ({
@@ -315,6 +331,10 @@ type AdminContextValue = {
   updateReel: (id: string, updates: Partial<AdminReel>) => void;
   toggleReel: (id: string) => void;
   deleteReel: (id: string) => void;
+
+  trustBadges: TrustBadge[];
+  updateTrustBadge: (id: string, updates: Partial<TrustBadge>) => void;
+  toggleTrustBadge: (id: string) => void;
 };
 
 const AdminContext = createContext<AdminContextValue | null>(null);
@@ -671,6 +691,26 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setReels((prev) => prev.filter((r) => r.id !== id));
   };
 
+  const [trustBadges, setTrustBadges] = useState<TrustBadge[]>(() => {
+    if (typeof window === "undefined") return seedTrustBadges;
+    try {
+      const stored = localStorage.getItem(TRUST_BADGES_KEY);
+      return stored ? JSON.parse(stored) : seedTrustBadges;
+    } catch { return seedTrustBadges; }
+  });
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(TRUST_BADGES_KEY, JSON.stringify(trustBadges));
+  }, [trustBadges, hydrated]);
+
+  const updateTrustBadge = (id: string, updates: Partial<TrustBadge>) => {
+    setTrustBadges((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+  };
+  const toggleTrustBadge = (id: string) => {
+    setTrustBadges((prev) => prev.map((b) => (b.id === id ? { ...b, enabled: !b.enabled } : b)));
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -728,6 +768,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         updateReel,
         toggleReel,
         deleteReel,
+        trustBadges,
+        updateTrustBadge,
+        toggleTrustBadge,
       }}
     >
       {children}

@@ -13,6 +13,7 @@ const SECTION_HREFS: Record<string, string> = {
   "reels": "/admin/reels",
   "collections": "/admin/collections",
   "testimonials": "/admin/testimonials",
+  "trust-badges": "/admin/trust-badges",
 };
 
 export default function HomepageBuilderPage() {
