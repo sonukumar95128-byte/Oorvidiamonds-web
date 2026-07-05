@@ -4,6 +4,17 @@ import Link from "next/link";
 import { useState } from "react";
 import { useAdmin, type HomepageSection } from "@/lib/admin-store";
 
+// Always use these hrefs regardless of what's stored in localStorage
+const SECTION_HREFS: Record<string, string> = {
+  "hero": "/admin/banners",
+  "best-sellers": "/admin/homepage/best-sellers",
+  "offer-banner": "/admin/banners",
+  "new-arrivals": "/admin/homepage/new-arrivals",
+  "reels": "/admin/reels",
+  "collections": "/admin/collections",
+  "testimonials": "/admin/testimonials",
+};
+
 export default function HomepageBuilderPage() {
   const { homepageSections, toggleHomepageSection, reorderHomepageSections, newArrivalsSlugs, bestSellersSlugs } =
     useAdmin();
@@ -74,9 +85,9 @@ export default function HomepageBuilderPage() {
               <p className="text-xs text-ink/50">{metaFor(section)}</p>
             </div>
 
-            {section.manageHref ? (
+            {SECTION_HREFS[section.id] ? (
               <Link
-                href={section.manageHref}
+                href={SECTION_HREFS[section.id]}
                 className="rounded-full border border-gold px-3 py-1 text-xs text-brand hover:bg-gold-light/20 whitespace-nowrap transition-colors"
               >
                 {section.manageLabel}
