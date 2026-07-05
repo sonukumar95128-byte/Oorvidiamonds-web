@@ -59,6 +59,15 @@ export default function AdminSettingsPage() {
           <p className="mt-2 text-xs text-ink/40">
             Currently shown on site: {formatRupee(settings.goldRatePerGram)}/g
           </p>
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-beige">
+            <span className="text-sm text-ink/70">Show gold rate in top bar</span>
+            <button
+              onClick={() => updateSettings({ showGoldRateInBar: !settings.showGoldRateInBar })}
+              className={"relative h-5 w-9 rounded-full transition-colors " + (settings.showGoldRateInBar ? "bg-gold" : "bg-beige")}
+            >
+              <span className={"absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform " + (settings.showGoldRateInBar ? "translate-x-4" : "translate-x-0.5")} />
+            </button>
+          </div>
         </div>
 
         {/* Announcement bar */}

@@ -113,6 +113,7 @@ export type SiteSettings = {
     cod: boolean;
   };
   gstPercent: number;
+  showGoldRateInBar: boolean;
 };
 
 // v3: bumped after setting all stock to 50 (was 1 each from the CSV).
@@ -261,6 +262,7 @@ const seedSettings: SiteSettings = {
   freeShippingThresholdInPaise: 99900,
   paymentMethods: { upi: true, card: true, netbanking: true, cod: true },
   gstPercent: 3,
+  showGoldRateInBar: true,
 };
 
 type AdminContextValue = {
