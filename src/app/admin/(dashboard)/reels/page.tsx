@@ -3,6 +3,19 @@
 import { useRef, useState } from "react";
 import { useAdmin } from "@/lib/admin-store";
 
+function getYoutubeId(url: string): string | null {
+  const patterns = [
+    /youtu\.be\/([^?&]+)/,
+    /youtube\.com\/watch\?v=([^&]+)/,
+    /youtube\.com\/shorts\/([^?&]+)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
 export default function AdminReelsPage() {
   const { reels, addReel, updateReel, toggleReel, deleteReel } = useAdmin();
   const [uploading, setUploading] = useState<string | null>(null);
@@ -54,21 +67,30 @@ export default function AdminReelsPage() {
           <div key={reel.id} className="rounded-xl border border-beige bg-white overflow-hidden">
             {/* Video preview */}
             <div className="relative bg-black" style={{ aspectRatio: "9/16", maxHeight: 260 }}>
-              {reel.videoUrl ? (
-                <video
-                  src={reel.videoUrl}
-                  className="h-full w-full object-cover"
-                  muted
-                  loop
-                  playsInline
-                  controls
-                />
-              ) : (
-                <div className="h-full w-full flex flex-col items-center justify-center gap-2 text-white/40">
-                  <span className="text-4xl">🎬</span>
-                  <span className="text-xs">No video uploaded</span>
-                </div>
-              )}
+              {(() => {
+                const ytId = reel.videoUrl ? getYoutubeId(reel.videoUrl) : null;
+                if (ytId) {
+                  return (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
+                      alt="YouTube thumbnail"
+                      className="h-full w-full object-cover"
+                    />
+                  );
+                }
+                if (reel.videoUrl) {
+                  return (
+                    <video src={reel.videoUrl} className="h-full w-full object-cover" muted loop playsInline controls />
+                  );
+                }
+                return (
+                  <div className="h-full w-full flex flex-col items-center justify-center gap-2 text-white/40">
+                    <span className="text-4xl">🎬</span>
+                    <span className="text-xs">No video uploaded</span>
+                  </div>
+                );
+              })()}
               {/* Enabled toggle badge */}
               <button
                 onClick={() => toggleReel(reel.id)}
@@ -113,12 +135,12 @@ export default function AdminReelsPage() {
                 <p className="text-xs text-red-500">{errors[reel.id]}</p>
               )}
 
-              {/* Or paste URL */}
+              {/* Or paste URL / YouTube */}
               <div className="flex gap-2">
                 <input
                   value={reel.videoUrl}
                   onChange={(e) => updateReel(reel.id, { videoUrl: e.target.value })}
-                  placeholder="Or paste video URL"
+                  placeholder="Or paste video / YouTube URL"
                   className="flex-1 rounded-lg border border-beige px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-gold"
                 />
                 <button

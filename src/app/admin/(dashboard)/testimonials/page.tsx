@@ -1,15 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAdmin, type TestimonialStatus } from "@/lib/admin-store";
-import { productImages } from "@/lib/dummy-images";
 
 const statusStyles: Record<TestimonialStatus, string> = {
   pending: "bg-beige text-ink/70",
   approved: "bg-green-100 text-green-700",
   rejected: "bg-red-100 text-red-600",
 };
+
+function Avatar({ src, name }: { src: string; name: string }) {
+  if (src) {
+    return (
+      <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden bg-beige">
+        <Image src={src} alt={name} fill sizes="48px" className="object-cover" />
+      </div>
+    );
+  }
+  return (
+    <div className="h-12 w-12 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand font-medium text-lg">
+      {name.charAt(0).toUpperCase()}
+    </div>
+  );
+}
 
 export default function AdminTestimonialsPage() {
   const { testimonials, setTestimonialStatus, toggleTestimonialFeatured, addTestimonial, deleteTestimonial } =
@@ -19,24 +33,33 @@ export default function AdminTestimonialsPage() {
   const [name, setName] = useState("");
   const [text, setText] = useState("");
   const [rating, setRating] = useState(5);
+  const [avatar, setAvatar] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const filtered = testimonials.filter((t) => filter === "all" || t.status === filter);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form, credentials: "same-origin" });
+      const data = await res.json();
+      if (res.ok) setAvatar(data.url);
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !text) return;
-    addTestimonial({
-      name,
-      text,
-      rating,
-      avatar: productImages[testimonials.length % productImages.length],
-      status: "pending",
-      featured: false,
-    });
-    setName("");
-    setText("");
-    setRating(5);
-    setShowForm(false);
+    addTestimonial({ name, text, rating, avatar, status: "pending", featured: false });
+    setName(""); setText(""); setRating(5); setAvatar(""); setShowForm(false);
   };
 
   return (
@@ -68,6 +91,23 @@ export default function AdminTestimonialsPage() {
             required
             className="w-full rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
           />
+          <div className="flex items-center gap-3">
+            <Avatar src={avatar} name={name || "?"} />
+            <div className="flex-1">
+              <label className={
+                "flex items-center gap-2 rounded-lg border border-dashed border-beige px-3 py-2 text-sm cursor-pointer hover:border-gold transition-colors " +
+                (uploading ? "opacity-60 cursor-not-allowed" : "")
+              }>
+                {uploading ? "Uploading…" : avatar ? "Change photo" : "Upload photo (optional)"}
+                <input ref={fileRef} type="file" accept="image/*" className="hidden" disabled={uploading} onChange={handleAvatarUpload} />
+              </label>
+              {avatar && (
+                <button type="button" onClick={() => setAvatar("")} className="mt-1 text-xs text-red-400 hover:text-red-600">
+                  Remove photo
+                </button>
+              )}
+            </div>
+          </div>
           <div className="flex items-center gap-2">
             <label className="text-sm text-ink/60">Rating</label>
             <select
@@ -76,9 +116,7 @@ export default function AdminTestimonialsPage() {
               className="rounded-lg border border-beige px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
             >
               {[5, 4, 3, 2, 1].map((r) => (
-                <option key={r} value={r}>
-                  {r} ★
-                </option>
+                <option key={r} value={r}>{r} ★</option>
               ))}
             </select>
           </div>
@@ -109,9 +147,7 @@ export default function AdminTestimonialsPage() {
       <div className="space-y-3">
         {filtered.map((t) => (
           <div key={t.id} className="flex items-start gap-4 rounded-xl border border-beige bg-white p-4">
-            <div className="relative h-12 w-12 shrink-0 rounded-full overflow-hidden bg-beige">
-              <Image src={t.avatar} alt={t.name} fill sizes="48px" className="object-cover" />
-            </div>
+            <Avatar src={t.avatar} name={t.name} />
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-sm font-medium text-brand">{t.name}</p>

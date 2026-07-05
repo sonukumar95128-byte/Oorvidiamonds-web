@@ -117,9 +117,9 @@ export function BannerImagePicker({ value, onChange, recommended }: BannerImageP
 
                 {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
 
-                {value && !value.startsWith("data:") && value.startsWith("/uploads/") && (
+                {value && !value.startsWith("data:") && (
                   <div className="mt-3">
-                    <p className="text-xs text-ink/50 mb-1">Current (uploaded):</p>
+                    <p className="text-xs text-ink/50 mb-1">Current image:</p>
                     <div className="relative h-14 w-full rounded-lg overflow-hidden bg-beige">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={value} alt="Current banner" className="h-full w-full object-cover" />

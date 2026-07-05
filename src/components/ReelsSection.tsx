@@ -3,6 +3,20 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { AdminReel } from "@/lib/admin-store";
 
+function getYoutubeId(url: string): string | null {
+  const patterns = [
+    /youtu\.be\/([^?&]+)/,
+    /youtube\.com\/watch\?v=([^&]+)/,
+    /youtube\.com\/shorts\/([^?&]+)/,
+    /youtube\.com\/embed\/([^?&]+)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
 export function ReelsSection({ reels }: { reels: AdminReel[] }) {
   const activeReels = reels.filter((r) => r.enabled);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -76,22 +90,38 @@ export function ReelsSection({ reels }: { reels: AdminReel[] }) {
               ].join(" ")}
               style={{ aspectRatio: "9/16" }}
             >
-              {reel.videoUrl ? (
-                <video
-                  ref={(el) => { videoRefs.current[i] = el; }}
-                  src={reel.videoUrl}
-                  className="h-full w-full object-cover"
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                />
-              ) : (
-                <div className="h-full w-full bg-brand/10 flex flex-col items-center justify-center text-ink/30 gap-2">
-                  <span className="text-4xl">🎬</span>
-                  <span className="text-xs">No video</span>
-                </div>
-              )}
+              {(() => {
+                const ytId = reel.videoUrl ? getYoutubeId(reel.videoUrl) : null;
+                if (ytId) {
+                  return (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${ytId}?autoplay=${isCenter ? 1 : 0}&mute=1&loop=1&playlist=${ytId}&controls=0&playsinline=1`}
+                      className="h-full w-full"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                    />
+                  );
+                }
+                if (reel.videoUrl) {
+                  return (
+                    <video
+                      ref={(el) => { videoRefs.current[i] = el; }}
+                      src={reel.videoUrl}
+                      className="h-full w-full object-cover"
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                    />
+                  );
+                }
+                return (
+                  <div className="h-full w-full bg-brand/10 flex flex-col items-center justify-center text-ink/30 gap-2">
+                    <span className="text-4xl">🎬</span>
+                    <span className="text-xs">No video</span>
+                  </div>
+                );
+              })()}
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
