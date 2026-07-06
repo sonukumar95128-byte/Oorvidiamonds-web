@@ -21,6 +21,15 @@ export function CategoryListing({ title, pageId, fallbackBanner, products, activ
   const bannerImage = pageBanners[pageId] ?? fallbackBanner;
   const { min, max } = getPriceRange(products);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [sort, setSort] = useState("newest");
+
+  const toNum = (p: string) => Number(p.replace(/[^0-9.]/g, ""));
+  const sortedProducts = [...products].sort((a, b) => {
+    if (sort === "price-asc") return toNum(a.price) - toNum(b.price);
+    if (sort === "price-desc") return toNum(b.price) - toNum(a.price);
+    if (sort === "bestselling") return b.rating - a.rating;
+    return 0; // newest = original order
+  });
 
   return (
     <div>
@@ -53,6 +62,7 @@ export function CategoryListing({ title, pageId, fallbackBanner, products, activ
               { value: "price-desc", label: "Price: High to Low" },
               { value: "bestselling", label: "Bestselling" },
             ]}
+            onChange={setSort}
           />
         </div>
 
@@ -64,7 +74,7 @@ export function CategoryListing({ title, pageId, fallbackBanner, products, activ
 
           {/* Products */}
           <div className="flex-1">
-            <InfiniteProductGrid products={products} />
+            <InfiniteProductGrid products={sortedProducts} />
           </div>
         </div>
       </div>
