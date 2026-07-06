@@ -57,7 +57,9 @@ export default function AdminSettingsPage() {
             <span className="text-ink/50 text-sm">/ g</span>
           </div>
           <p className="mt-2 text-xs text-ink/40">
-            Currently shown on site: {formatRupee(settings.goldRatePerGram)}/g
+            {settings.goldRateMode === "auto"
+              ? `Live rate (auto-fetched): ${formatRupee(settings.goldRatePerGram)}/g`
+              : `Currently shown on site: ${formatRupee(settings.goldRatePerGram)}/g`}
           </p>
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-beige">
             <span className="text-sm text-ink/70">Show gold rate in top bar</span>
