@@ -397,7 +397,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
 
     // Phase 2: overwrite with DB values (server-persisted, wins over stale localStorage)
-    fetch("/api/admin/config")
+    // Use public-config endpoint so regular visitors also get up-to-date data
+    fetch("/api/public-config")
       .then((r) => r.json())
       .then((db: Record<string, unknown>) => {
         if (!db) return;
@@ -409,16 +410,26 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         if (db.homepage) setHomepageSections(db.homepage as typeof seedHomepageSections);
         if (db.testimonials) setTestimonials(db.testimonials as typeof seedTestimonials);
         if (db.collections) setCollections(db.collections as typeof seedCollections);
-        if (db.coupons) setCoupons(db.coupons as typeof seedCoupons);
         if (db.settings) setSettings(db.settings as typeof seedSettings);
         if (db.newArrivals) setNewArrivalsSlugs(db.newArrivals as string[]);
         if (db.bestSellers) setBestSellersSlugs(db.bestSellers as string[]);
-        if (db.productReviews) setProductReviews(db.productReviews as ProductReview[]);
         if (db.categoryImages) setCategoryImages(db.categoryImages as Record<string, string>);
         if (db.pageBanners) setPageBanners(db.pageBanners as Record<string, string>);
+        if (db.reels) setReels(db.reels as AdminReel[]);
+        if (db.trustBadges) setTrustBadges(db.trustBadges as TrustBadge[]);
       })
       .catch(() => { /* DB not available — localStorage values stay */ })
       .finally(() => setHydrated(true));
+
+    // Also load admin-only data (coupons, productReviews) if logged in as admin
+    fetch("/api/admin/config?key=coupons")
+      .then((r) => r.ok ? r.json() : null)
+      .then((v) => { if (v) setCoupons(v as typeof seedCoupons); })
+      .catch(() => {});
+    fetch("/api/admin/config?key=productReviews")
+      .then((r) => r.ok ? r.json() : null)
+      .then((v) => { if (v) setProductReviews(v as ProductReview[]); })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -678,7 +689,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydrated) return;
     localStorage.setItem(REELS_KEY, JSON.stringify(reels));
-  }, [reels, hydrated]);
+    syncDb("reels", reels);
+  }, [reels, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addReel = () => {
     const id = `reel-${Date.now()}`;
@@ -705,7 +717,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydrated) return;
     localStorage.setItem(TRUST_BADGES_KEY, JSON.stringify(trustBadges));
-  }, [trustBadges, hydrated]);
+    syncDb("trustBadges", trustBadges);
+  }, [trustBadges, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateTrustBadge = (id: string, updates: Partial<TrustBadge>) => {
     setTrustBadges((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
