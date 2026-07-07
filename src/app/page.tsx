@@ -8,7 +8,7 @@ import { PromoSlider } from "@/components/PromoSlider";
 import { SectionHeading } from "@/components/SectionHeading";
 import { ReelsSection } from "@/components/ReelsSection";
 import { useAdmin } from "@/lib/admin-store";
-import { categories, categoryToSlug } from "@/lib/dummy-images";
+import { categories, categoryImages as defaultCategoryImages, categoryToSlug } from "@/lib/dummy-images";
 
 export default function Home() {
   const {
@@ -55,7 +55,7 @@ export default function Home() {
                 className="flex flex-col items-center gap-3 group shrink-0"
               >
                 <div className="relative h-24 w-24 sm:h-32 sm:w-32 lg:h-36 lg:w-36 rounded-full overflow-hidden ring-1 ring-beige group-hover:ring-2 group-hover:ring-gold transition-all">
-                  <Image src={categoryImages[c] ?? ""} alt={c} fill sizes="(min-width:1024px) 144px, (min-width:640px) 128px, 96px" className="object-cover" />
+                  <Image src={categoryImages[c] || defaultCategoryImages[c] || ""} alt={c} fill sizes="(min-width:1024px) 144px, (min-width:640px) 128px, 96px" className="object-cover" />
                 </div>
                 <span className="text-sm sm:text-base text-ink/80">{c}</span>
               </Link>
