@@ -3,12 +3,12 @@
 import { realProducts } from "@/lib/real-products";
 
 export const categoryImages: Record<string, string> = {
-  Rings: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=300&h=300&fit=crop",
-  Earrings: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300&h=300&fit=crop",
-  Necklaces: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300&h=300&fit=crop",
-  Bracelets: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=300&h=300&fit=crop",
-  Pendants: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=300&h=300&fit=crop",
-  "Nose Pins": "https://images.unsplash.com/photo-1631214524115-de7188ff5402?w=300&h=300&fit=crop",
+  Rings: "https://res.cloudinary.com/sbj4xmfv/image/upload/ALR00390-1.webp",
+  Earrings: "https://res.cloudinary.com/sbj4xmfv/image/upload/APS00217E-1.webp",
+  Necklaces: "https://res.cloudinary.com/sbj4xmfv/image/upload/AMS00143-1.webp",
+  Bracelets: "https://res.cloudinary.com/sbj4xmfv/image/upload/ALB00230-1.webp",
+  Pendants: "https://res.cloudinary.com/sbj4xmfv/image/upload/APS00264.webp",
+  "Nose Pins": "https://res.cloudinary.com/sbj4xmfv/image/upload/ANP000061-1.webp",
 };
 
 export const categoryBannerImages: Record<string, string> = {
