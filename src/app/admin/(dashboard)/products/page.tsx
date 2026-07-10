@@ -11,6 +11,11 @@ type StockFilter = "all" | "in-stock" | "low-stock" | "out-of-stock";
 type SortKey = "name" | "price" | "stock";
 type SortDir = "asc" | "desc";
 
+const METAL_OPTIONS = ["Yellow gold", "Rose gold", "White gold", "Platinum", "Silver"];
+const KARAT_OPTIONS = ["14k", "18k", "22k"];
+const DIAMOND_OPTIONS = ["Natural", "Lab-grown", "Solitaire", "No diamond"];
+const OCCASION_OPTIONS = ["Bridal", "Everyday Light", "Gifting"];
+
 function skuFor(slug: string) {
   return slug.toUpperCase().replace(/-/g, "").slice(0, 10);
 }
@@ -20,6 +25,10 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<Category | "all">("all");
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
+  const [metalFilter, setMetalFilter] = useState("");
+  const [karatFilter, setKaratFilter] = useState("");
+  const [diamondFilter, setDiamondFilter] = useState("");
+  const [occasionFilter, setOccasionFilter] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
@@ -27,11 +36,20 @@ export default function AdminProductsPage() {
 
   const filtered = useMemo(() => {
     const result = products.filter((p) => {
-      if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        const matchName = p.name.toLowerCase().includes(q);
+        const matchSku = (p.sku ?? "").toLowerCase().includes(q);
+        if (!matchName && !matchSku) return false;
+      }
       if (categoryFilter !== "all" && p.category !== categoryFilter) return false;
       if (stockFilter === "in-stock" && p.stock <= 5) return false;
       if (stockFilter === "low-stock" && !(p.stock > 0 && p.stock <= 5)) return false;
       if (stockFilter === "out-of-stock" && p.stock !== 0) return false;
+      if (metalFilter && p.attributes?.metalType !== metalFilter) return false;
+      if (karatFilter && p.attributes?.karat !== karatFilter) return false;
+      if (diamondFilter && p.attributes?.diamondType !== diamondFilter) return false;
+      if (occasionFilter && p.attributes?.occasion !== occasionFilter) return false;
       return true;
     });
 
@@ -82,44 +100,54 @@ export default function AdminProductsPage() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search products..."
+          placeholder="Search by name or SKU…"
           className="w-full max-w-xs rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
         />
 
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value as Category | "all")}
-          className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
-        >
+        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value as Category | "all")}
+          className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
           <option value="all">All categories</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
+          {categories.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
 
-        <select
-          value={stockFilter}
-          onChange={(e) => setStockFilter(e.target.value as StockFilter)}
-          className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
-        >
+        <select value={metalFilter} onChange={(e) => setMetalFilter(e.target.value)}
+          className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
+          <option value="">All metals</option>
+          {METAL_OPTIONS.map((m) => <option key={m} value={m}>{m}</option>)}
+        </select>
+
+        <select value={karatFilter} onChange={(e) => setKaratFilter(e.target.value)}
+          className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
+          <option value="">All karats</option>
+          {KARAT_OPTIONS.map((k) => <option key={k} value={k}>{k}</option>)}
+        </select>
+
+        <select value={diamondFilter} onChange={(e) => setDiamondFilter(e.target.value)}
+          className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
+          <option value="">All diamond types</option>
+          {DIAMOND_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
+        </select>
+
+        <select value={occasionFilter} onChange={(e) => setOccasionFilter(e.target.value)}
+          className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
+          <option value="">All occasions</option>
+          {OCCASION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+        </select>
+
+        <select value={stockFilter} onChange={(e) => setStockFilter(e.target.value as StockFilter)}
+          className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
           <option value="all">All stock levels</option>
           <option value="in-stock">In stock (&gt;5)</option>
           <option value="low-stock">Low stock (1–5)</option>
           <option value="out-of-stock">Out of stock</option>
         </select>
 
-        {(search || categoryFilter !== "all" || stockFilter !== "all") && (
+        {(search || categoryFilter !== "all" || stockFilter !== "all" || metalFilter || karatFilter || diamondFilter || occasionFilter) && (
           <button
-            onClick={() => {
-              setSearch("");
-              setCategoryFilter("all");
-              setStockFilter("all");
-            }}
+            onClick={() => { setSearch(""); setCategoryFilter("all"); setStockFilter("all"); setMetalFilter(""); setKaratFilter(""); setDiamondFilter(""); setOccasionFilter(""); }}
             className="text-sm text-gold hover:text-brand"
           >
-            Clear filters
+            Clear all
           </button>
         )}
 
