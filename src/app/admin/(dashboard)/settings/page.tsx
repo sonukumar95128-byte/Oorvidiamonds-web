@@ -1,8 +1,54 @@
 ﻿"use client";
 
 import { useState } from "react";
-import { useAdmin } from "@/lib/admin-store";
+import { useAdmin, type FilterOptions } from "@/lib/admin-store";
 import { formatRupee } from "@/lib/dummy-images";
+
+const FILTER_FIELDS: { key: keyof FilterOptions; label: string }[] = [
+  { key: "metalTypes", label: "Metal types" },
+  { key: "karats", label: "Gold karats" },
+  { key: "diamondTypes", label: "Diamond types" },
+  { key: "diamondColours", label: "Diamond colours" },
+  { key: "diamondClarities", label: "Diamond clarities" },
+  { key: "occasions", label: "Occasions" },
+];
+
+function TagEditor({ label, values, onChange }: { label: string; values: string[]; onChange: (v: string[]) => void }) {
+  const [input, setInput] = useState("");
+
+  const add = () => {
+    const val = input.trim();
+    if (!val || values.includes(val)) return;
+    onChange([...values, val]);
+    setInput("");
+  };
+
+  const remove = (v: string) => onChange(values.filter((x) => x !== v));
+
+  return (
+    <div>
+      <p className="text-xs text-ink/50 mb-2">{label}</p>
+      <div className="flex flex-wrap gap-2 mb-2">
+        {values.map((v) => (
+          <span key={v} className="flex items-center gap-1 rounded-full bg-beige px-3 py-1 text-xs text-ink/80">
+            {v}
+            <button onClick={() => remove(v)} className="ml-1 text-ink/40 hover:text-red-500 font-bold leading-none">×</button>
+          </span>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), add())}
+          placeholder="Type and press Enter…"
+          className="flex-1 rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
+        />
+        <button onClick={add} className="rounded-lg border border-gold px-3 py-2 text-sm text-brand hover:bg-gold/10">+ Add</button>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminSettingsPage() {
   const { settings, updateSettings } = useAdmin();
@@ -158,6 +204,22 @@ export default function AdminSettingsPage() {
               className="w-20 rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
             />
             <span className="text-ink/50 text-sm">%</span>
+          </div>
+        </div>
+
+        {/* Filter options */}
+        <div className="rounded-xl border border-beige bg-white p-5 lg:col-span-2">
+          <h2 className="text-sm font-medium text-brand mb-1">Filter options</h2>
+          <p className="text-xs text-ink/40 mb-5">These values appear in product edit form and shop filter sidebar. Add or remove as needed.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FILTER_FIELDS.map(({ key, label }) => (
+              <TagEditor
+                key={key}
+                label={label}
+                values={settings.filterOptions?.[key] ?? []}
+                onChange={(v) => updateSettings({ filterOptions: { ...settings.filterOptions, [key]: v } })}
+              />
+            ))}
           </div>
         </div>
       </div>

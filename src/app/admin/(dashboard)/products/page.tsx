@@ -11,17 +11,14 @@ type StockFilter = "all" | "in-stock" | "low-stock" | "out-of-stock";
 type SortKey = "name" | "price" | "stock";
 type SortDir = "asc" | "desc";
 
-const METAL_OPTIONS = ["Yellow gold", "Rose gold", "White gold", "Platinum", "Silver"];
-const KARAT_OPTIONS = ["14k", "18k", "22k"];
-const DIAMOND_OPTIONS = ["Natural", "Lab-grown", "Solitaire", "No diamond"];
-const OCCASION_OPTIONS = ["Bridal", "Everyday Light", "Gifting"];
 
 function skuFor(slug: string) {
   return slug.toUpperCase().replace(/-/g, "").slice(0, 10);
 }
 
 export default function AdminProductsPage() {
-  const { products, deleteProduct } = useAdmin();
+  const { products, deleteProduct, settings } = useAdmin();
+  const fo = settings.filterOptions;
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<Category | "all">("all");
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
@@ -113,25 +110,25 @@ export default function AdminProductsPage() {
         <select value={metalFilter} onChange={(e) => setMetalFilter(e.target.value)}
           className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
           <option value="">All metals</option>
-          {METAL_OPTIONS.map((m) => <option key={m} value={m}>{m}</option>)}
+          {(fo?.metalTypes ?? []).map((m) => <option key={m} value={m}>{m}</option>)}
         </select>
 
         <select value={karatFilter} onChange={(e) => setKaratFilter(e.target.value)}
           className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
           <option value="">All karats</option>
-          {KARAT_OPTIONS.map((k) => <option key={k} value={k}>{k}</option>)}
+          {(fo?.karats ?? []).map((k) => <option key={k} value={k}>{k}</option>)}
         </select>
 
         <select value={diamondFilter} onChange={(e) => setDiamondFilter(e.target.value)}
           className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
           <option value="">All diamond types</option>
-          {DIAMOND_OPTIONS.map((d) => <option key={d} value={d}>{d}</option>)}
+          {(fo?.diamondTypes ?? []).map((d) => <option key={d} value={d}>{d}</option>)}
         </select>
 
         <select value={occasionFilter} onChange={(e) => setOccasionFilter(e.target.value)}
           className="rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold">
           <option value="">All occasions</option>
-          {OCCASION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+          {(fo?.occasions ?? []).map((o) => <option key={o} value={o}>{o}</option>)}
         </select>
 
         <select value={stockFilter} onChange={(e) => setStockFilter(e.target.value as StockFilter)}

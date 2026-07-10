@@ -102,6 +102,15 @@ export type TrustBadge = {
   enabled: boolean;
 };
 
+export type FilterOptions = {
+  metalTypes: string[];
+  karats: string[];
+  diamondTypes: string[];
+  diamondColours: string[];
+  diamondClarities: string[];
+  occasions: string[];
+};
+
 export type SiteSettings = {
   goldRatePerGram: number; // 22kt, ₹/g
   goldRateMode: "auto" | "manual";
@@ -115,7 +124,8 @@ export type SiteSettings = {
   };
   gstPercent: number;
   showGoldRateInBar: boolean;
-  upiId: string; // e.g. "shop@upi" for QR code payments
+  upiId: string;
+  filterOptions: FilterOptions;
 };
 
 // v3: bumped after setting all stock to 50 (was 1 each from the CSV).
@@ -266,6 +276,14 @@ const seedSettings: SiteSettings = {
   gstPercent: 3,
   showGoldRateInBar: true,
   upiId: "",
+  filterOptions: {
+    metalTypes: ["Yellow gold", "Rose gold", "White gold", "Platinum", "Silver"],
+    karats: ["14k", "18k", "22k"],
+    diamondTypes: ["Natural", "Lab-grown", "Solitaire", "No diamond"],
+    diamondColours: ["D-F", "G-H", "I-J"],
+    diamondClarities: ["VVS", "VS", "SI"],
+    occasions: ["Bridal", "Everyday Light", "Gifting"],
+  },
 };
 
 type AdminContextValue = {

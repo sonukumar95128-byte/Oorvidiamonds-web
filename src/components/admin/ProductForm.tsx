@@ -11,7 +11,8 @@ type ProductFormProps = {
 
 export function ProductForm({ initial }: ProductFormProps) {
   const router = useRouter();
-  const { addProduct, updateProduct } = useAdmin();
+  const { addProduct, updateProduct, settings } = useAdmin();
+  const fo = settings.filterOptions;
 
   const [sku, setSku] = useState(initial?.sku ?? "");
   const [name, setName] = useState(initial?.name ?? "");
@@ -253,7 +254,7 @@ export function ProductForm({ initial }: ProductFormProps) {
             <select value={metalType} onChange={(e) => setMetalType(e.target.value)}
               className="w-full rounded-lg border border-beige px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold bg-white">
               <option value="">— select —</option>
-              {["Yellow gold", "Rose gold", "White gold", "Platinum", "Silver"].map((m) => (
+              {(fo?.metalTypes ?? ["Yellow gold", "Rose gold", "White gold", "Platinum", "Silver"]).map((m) => (
                 <option key={m} value={m}>{m}</option>
               ))}
             </select>
@@ -264,7 +265,7 @@ export function ProductForm({ initial }: ProductFormProps) {
             <select value={karat} onChange={(e) => setKarat(e.target.value)}
               className="w-full rounded-lg border border-beige px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold bg-white">
               <option value="">— select —</option>
-              {["14k", "18k", "22k"].map((k) => (
+              {(fo?.karats ?? ["14k", "18k", "22k"]).map((k) => (
                 <option key={k} value={k}>{k}</option>
               ))}
             </select>
@@ -275,7 +276,7 @@ export function ProductForm({ initial }: ProductFormProps) {
             <select value={diamondType} onChange={(e) => setDiamondType(e.target.value)}
               className="w-full rounded-lg border border-beige px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold bg-white">
               <option value="">— select —</option>
-              {["Natural", "Lab-grown", "Solitaire", "No diamond"].map((d) => (
+              {(fo?.diamondTypes ?? ["Natural", "Lab-grown", "Solitaire", "No diamond"]).map((d) => (
                 <option key={d} value={d}>{d}</option>
               ))}
             </select>
@@ -286,7 +287,7 @@ export function ProductForm({ initial }: ProductFormProps) {
             <select value={diamondColour} onChange={(e) => setDiamondColour(e.target.value)}
               className="w-full rounded-lg border border-beige px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold bg-white">
               <option value="">— select —</option>
-              {["D-F", "G-H", "I-J"].map((c) => (
+              {(fo?.diamondColours ?? ["D-F", "G-H", "I-J"]).map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
@@ -297,7 +298,7 @@ export function ProductForm({ initial }: ProductFormProps) {
             <select value={diamondClarity} onChange={(e) => setDiamondClarity(e.target.value)}
               className="w-full rounded-lg border border-beige px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold bg-white">
               <option value="">— select —</option>
-              {["VVS", "VS", "SI"].map((c) => (
+              {(fo?.diamondClarities ?? ["VVS", "VS", "SI"]).map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
@@ -308,7 +309,7 @@ export function ProductForm({ initial }: ProductFormProps) {
             <select value={occasion} onChange={(e) => setOccasion(e.target.value)}
               className="w-full rounded-lg border border-beige px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold bg-white">
               <option value="">— select —</option>
-              {["Bridal", "Everyday Light", "Gifting"].map((o) => (
+              {(fo?.occasions ?? ["Bridal", "Everyday Light", "Gifting"]).map((o) => (
                 <option key={o} value={o}>{o}</option>
               ))}
             </select>
