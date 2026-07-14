@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --color-brand: #2a1414; /* Deep Burgundy */
-  --color-brand-secondary: #4a2b25; /* Warm Brown */
-  --color-gold: #d4a24c; /* Royal Gold */
-  --color-gold-light: #f2d18a; /* Champagne Gold */
-  --color-ivory: #f8f4ee; /* Warm Ivory */
-  --color-beige: #efe7dd; /* Champagne Beige */
-  --color-ink: #2b2b2b; /* Charcoal */
+  --color-brand: #40080d; /* Deep Maroon */
+  --color-brand-secondary: #5c0e16; /* Wine */
+  --color-gold: #c9a356; /* Royal Gold */
+  --color-gold-light: #e7c878; /* Champagne Gold */
+  --color-ivory: #fbf7ef; /* Warm Ivory */
+  --color-beige: #ede2cc; /* Champagne Beige */
+  --color-ink: #2b1a14; /* Espresso */
 
   --background: var(--color-ivory);
   --foreground: var(--color-ink);
@@ -24,7 +24,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-heading: var(--font-cormorant);
-  --font-sans: var(--font-montserrat);
+  --font-sans: var(--font-jost);
 }
 
 body {
@@ -37,8 +37,8 @@ body {
   background-color: var(--color-beige);
   background-image: repeating-linear-gradient(
     45deg,
-    rgba(212, 162, 76, 0.18) 0px,
-    rgba(212, 162, 76, 0.18) 2px,
+    rgba(201, 163, 86, 0.18) 0px,
+    rgba(201, 163, 86, 0.18) 2px,
     transparent 2px,
     transparent 10px
   );
@@ -61,9 +61,34 @@ body {
   to   { opacity: 1; transform: scale(1); }
 }
 
+@keyframes shimmer {
+  from { background-position: -150% 0; }
+  to   { background-position: 250% 0; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.4; transform: scale(0.85); }
+  50%      { opacity: 1;   transform: scale(1.15); }
+}
+
+@keyframes kenburns {
+  from { transform: scale(1); }
+  to   { transform: scale(1.08); }
+}
+
 .animate-fadeUp  { animation: fadeUp  0.5s ease-out both; }
 .animate-fadeIn  { animation: fadeIn  0.4s ease-out both; }
 .animate-scaleIn { animation: scaleIn 0.4s ease-out both; }
+
+.animate-shimmer {
+  background-image: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+  background-size: 200% 100%;
+  animation: shimmer 2.2s ease-in-out infinite;
+}
+
+.animate-sparkle { animation: sparkle 1.8s ease-in-out infinite; }
+
+.animate-kenburns { animation: kenburns 12s ease-out both; }
 
 /* Staggered children — wrap parent in animate-stagger */
 .animate-stagger > * { animation: fadeUp 0.5s ease-out both; }
@@ -81,6 +106,22 @@ body {
 
 /* Better link & button hover feel */
 a, button { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Respect OS-level reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeUp,
+  .animate-fadeIn,
+  .animate-scaleIn,
+  .animate-shimmer,
+  .animate-sparkle,
+  .animate-kenburns,
+  .animate-stagger > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  * { scroll-behavior: auto !important; }
+}
 
 /* ─────────────────────────────────────────────────────── */
 

@@ -48,6 +48,7 @@ export const collectionImages: Record<string, string> = {
   Bridal: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=450&fit=crop",
   "Everyday Light": "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&h=450&fit=crop",
   Gifting: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=600&h=450&fit=crop",
+  "Oorvi Diamond": "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=600&h=450&fit=crop",
 };
 
 export const productImages = [
@@ -142,6 +143,13 @@ export const dummyProducts: DummyProduct[] = realProducts.map((p) => ({
 
 export function getProductBySlug(slug: string): DummyProduct | undefined {
   return dummyProducts.find((p) => p.slug === slug);
+}
+
+export function getOorviDiamondSlugs(limit = 8): string[] {
+  return dummyProducts
+    .filter((p) => p.attributes?.["Diamond Colour"] || /diamond/i.test(p.name))
+    .slice(0, limit)
+    .map((p) => p.slug);
 }
 
 export const metalOptions = ["Gold 14k", "Rose 14k", "Silver"];

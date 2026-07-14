@@ -31,7 +31,7 @@ export function AnnouncementBar() {
   if (!displayText) return null;
 
   return (
-    <div className="bg-brand text-gold-light text-center text-xs tracking-wide py-2 px-4">
+    <div className="bg-brand text-gold-light text-center text-[13px] uppercase tracking-[2.5px] font-light py-2.5 px-4">
       {displayText}
     </div>
   );

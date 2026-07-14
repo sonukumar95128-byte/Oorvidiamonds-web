@@ -2,18 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 const shopLinks = ["Rings", "Earrings", "Necklaces", "Bracelets", "Pendants", "Nose Pins"];
-const helpLinks = [
-  { label: "Track order", href: "/account/orders" },
-  { label: "Shipping & returns", href: "/help/shipping-returns" },
-  { label: "Size guide", href: "/help/size-guide" },
-  { label: "Care & warranty", href: "/help/care-warranty" },
-  { label: "Contact us", href: "/help/contact" },
-];
 const companyLinks = [
-  { label: "About Lakshiraah", href: "/about" },
-  { label: "Store locator", href: "/store-locator" },
-  { label: "Privacy policy", href: "/privacy" },
-  { label: "Terms", href: "/terms" },
+  { label: "Our Story", href: "/about" },
+  { label: "Certification", href: "/help/care-warranty" },
+  { label: "Lifetime Exchange", href: "/help/care-warranty" },
+  { label: "Contact Us", href: "/help/contact" },
 ];
 
 const socialLinks = [
@@ -52,77 +45,80 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-brand text-gold-light/80">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div>
-          <Image
-            src="/brand/lakshiraah-logo.png"
-            alt="Lakshiraah"
-            width={220}
-            height={60}
-            className="h-16 w-auto object-contain mb-3"
-          />
-          <p className="text-xs text-gold-light/60 leading-relaxed">
-            Luxurious concepts in fine jewellery — handcrafted, hallmarked, and certified.
-          </p>
-          <div className="flex items-center gap-3 mt-4">
-            {socialLinks.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                aria-label={s.label}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="grid h-8 w-8 place-items-center rounded-full border border-gold-light/30 text-gold-light/80 hover:border-gold hover:text-gold transition-colors"
-              >
-                {s.icon}
-              </a>
-            ))}
+    <footer className="bg-brand text-gold-light/70">
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10 pt-12 sm:pt-[70px] pb-6 sm:pb-[30px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-[50px] pb-8 sm:pb-[50px] border-b border-gold-light/15">
+          <div>
+            <Image src="/brand/oorvi-logo.png" alt="Oorvi Diamonds" width={200} height={64} className="h-14 w-auto object-contain rounded-md mb-4" />
+            <p className="text-sm font-light leading-relaxed text-gold-light/60 max-w-[280px]">
+              Fine diamond jewellery, crafted to celebrate every moment of your life.
+            </p>
+            <div className="flex items-center gap-3 mt-5">
+              {socialLinks.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="grid h-8 w-8 place-items-center rounded-full border border-gold-light/30 text-gold-light/80 hover:border-gold hover:text-gold transition-colors"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-xs tracking-[3px] uppercase text-gold-light mb-5">Shop</h4>
+            <ul className="space-y-3 text-sm font-light">
+              {shopLinks.map((l) => (
+                <li key={l}>
+                  <Link href={`/jewellery/${l.toLowerCase().replace(/\s+/g, "-")}`} className="hover:text-gold">
+                    {l}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-xs tracking-[3px] uppercase text-gold-light mb-5">Company</h4>
+            <ul className="space-y-3 text-sm font-light">
+              {companyLinks.map((l) => (
+                <li key={l.label}>
+                  <Link href={l.href} className="hover:text-gold">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-xs tracking-[3px] uppercase text-gold-light mb-5">Stay in touch</h4>
+            <p className="text-sm font-light mb-4 text-gold-light/60">New collections and private previews, in your inbox.</p>
+            <div className="flex">
+              <input
+                type="email"
+                placeholder="Your email"
+                className="flex-1 min-w-0 bg-white/[0.06] border border-gold-light/30 text-gold-light placeholder:text-gold-light/40 px-4 py-3 text-sm focus:outline-none"
+              />
+              <button className="shrink-0 bg-gold text-brand px-5 py-3 text-xs tracking-[2px] uppercase hover:bg-gold-light transition-colors">
+                Join
+              </button>
+            </div>
           </div>
         </div>
 
-        <div>
-          <h4 className="font-heading text-lg mb-3 text-gold-light">Shop</h4>
-          <ul className="space-y-2 text-sm text-gold-light/70">
-            {shopLinks.map((l) => (
-              <li key={l}>
-                <Link href={`/jewellery/${l.toLowerCase().replace(/\s+/g, "-")}`} className="hover:text-gold">
-                  {l}
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 text-xs font-light text-gold-light/45">
+          <p>© {new Date().getFullYear()} Oorvi Diamonds. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <Link href="/privacy" className="hover:text-gold-light/80">Privacy</Link>
+            <Link href="/terms" className="hover:text-gold-light/80">Terms</Link>
+            <Link href="/help/shipping-returns" className="hover:text-gold-light/80">Shipping & Returns</Link>
+          </div>
         </div>
-
-        <div>
-          <h4 className="font-heading text-lg mb-3 text-gold-light">Help</h4>
-          <ul className="space-y-2 text-sm text-gold-light/70">
-            {helpLinks.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="hover:text-gold">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-heading text-lg mb-3 text-gold-light">Company</h4>
-          <ul className="space-y-2 text-sm text-gold-light/70">
-            {companyLinks.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="hover:text-gold">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="border-t border-gold-light/15 px-4 sm:px-6 py-4 text-center text-xs text-gold-light/50">
-        © {new Date().getFullYear()} Lakshiraah. All rights reserved.
       </div>
     </footer>
   );

@@ -6,7 +6,7 @@ import { categoryToSlug } from "@/lib/dummy-images";
 
 type CuratedProductGridProps = {
   slugs: string[];
-  badge?: "Bestseller" | "-20%";
+  badge?: "Bestseller" | "-20%" | "New";
 };
 
 export function CuratedProductGrid({ slugs, badge }: CuratedProductGridProps) {
@@ -17,7 +17,7 @@ export function CuratedProductGrid({ slugs, badge }: CuratedProductGridProps) {
     .filter((p): p is NonNullable<typeof p> => !!p);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 animate-stagger">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-[26px] animate-stagger">
       {items.map((p) => (
         <ProductCard
           key={p.slug}

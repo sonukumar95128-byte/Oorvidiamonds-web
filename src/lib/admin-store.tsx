@@ -6,6 +6,7 @@ import {
   collectionImages,
   dummyProducts,
   dummyTestimonials,
+  getOorviDiamondSlugs,
   heroSlides,
   productImages,
   slugify,
@@ -231,6 +232,14 @@ const seedCollections: AdminCollection[] = [
     productSlugs: dummyProducts.slice(16, 24).map((p) => p.slug),
     enabled: true,
   },
+  {
+    id: "oorvi-diamond",
+    title: "Oorvi Diamond",
+    slug: "oorvi-diamond",
+    image: collectionImages["Oorvi Diamond"],
+    productSlugs: getOorviDiamondSlugs(),
+    enabled: true,
+  },
 ];
 
 const seedCoupons: AdminCoupon[] = [
@@ -270,7 +279,7 @@ const seedBestSellers: string[] = dummyProducts.slice(8, 16).map((p) => p.slug);
 const seedSettings: SiteSettings = {
   goldRatePerGram: 7128,
   goldRateMode: "auto",
-  announcementText: "Free shipping over ₹999 · Today's gold rate ₹7,128/g · Easy 15-day returns",
+  announcementText: "Complimentary shipping across India · Certified diamonds · Lifetime exchange",
   freeShippingThresholdInPaise: 99900,
   paymentMethods: { upi: true, card: true, netbanking: true, cod: true },
   gstPercent: 3,

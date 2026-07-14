@@ -10,7 +10,7 @@ type ProductCardProps = {
   hoverImage?: string;
   name?: string;
   price?: string;
-  badge?: "Bestseller" | "-20%";
+  badge?: "Bestseller" | "-20%" | "New";
   href?: string;
 };
 
