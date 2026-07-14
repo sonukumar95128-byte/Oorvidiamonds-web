@@ -10,9 +10,7 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { ReelsSection } from "@/components/ReelsSection";
 import { Reveal } from "@/components/Reveal";
 import {
-  categories,
   categoryImages as defaultCategoryImages,
-  categoryToSlug,
   dummyProducts,
   dummyTestimonials,
   heroSlides,
@@ -83,6 +81,13 @@ const instaPosts = productImages.slice(0, 5).map((image, i) => ({
   image,
   likes: ["2,148", "1,872", "3,021", "1,540", "2,689"][i],
 }));
+
+const categoryTiles = [
+  { name: "Diamond Rings", href: "/jewellery/rings", imageKey: "Rings" as const },
+  { name: "Necklaces & Pendants", href: "/jewellery/necklaces", imageKey: "Necklaces" as const },
+  { name: "Earrings", href: "/jewellery/earrings", imageKey: "Earrings" as const },
+  { name: "Bangles & Bracelets", href: "/jewellery/bracelets", imageKey: "Bracelets" as const },
+];
 
 async function getSiteConfig() {
   try {
@@ -155,19 +160,19 @@ export default async function Home() {
               <h2 className="font-heading text-4xl sm:text-[44px] text-brand">Shop by Category</h2>
             </Reveal>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 sm:gap-[26px]">
-              {categories.map((c, i) => (
-                <Reveal key={c} delay={i * 0.08}>
-                  <Link href={`/jewellery/${categoryToSlug(c)}`} className="block text-center group">
+              {categoryTiles.map((tile, i) => (
+                <Reveal key={tile.name} delay={i * 0.08}>
+                  <Link href={tile.href} className="block text-center group">
                     <div className="relative aspect-[3/3.6] overflow-hidden bg-beige">
                       <Image
-                        src={catImages[c] || defaultCategoryImages[c] || ""}
-                        alt={c}
+                        src={catImages[tile.imageKey] || defaultCategoryImages[tile.imageKey] || ""}
+                        alt={tile.name}
                         fill
                         sizes="(min-width:640px) 25vw, 50vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <div className="font-heading text-lg sm:text-2xl text-brand mt-4">{c}</div>
+                    <div className="font-heading text-lg sm:text-2xl text-brand mt-4">{tile.name}</div>
                     <div className="text-[11px] tracking-[2.5px] uppercase text-gold mt-1.5">Explore →</div>
                   </Link>
                 </Reveal>
