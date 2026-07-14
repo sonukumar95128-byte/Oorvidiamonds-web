@@ -7,7 +7,7 @@ import { CuratedProductGrid } from "@/components/CuratedProductGrid";
 import { HeroPeekCarousel } from "@/components/HeroPeekCarousel";
 import { PromoSlider } from "@/components/PromoSlider";
 import { SectionHeading } from "@/components/SectionHeading";
-import { ReelsSection } from "@/components/ReelsSection";
+import { ReelsGrid } from "@/components/ReelsGrid";
 import { Reveal } from "@/components/Reveal";
 import {
   categoryImages as defaultCategoryImages,
@@ -264,7 +264,7 @@ export default async function Home() {
               <p className="text-xs tracking-[5px] uppercase text-gold-light/70 mb-3.5">Watch & shop</p>
               <h2 className="font-heading text-4xl sm:text-[44px] text-gold-light">Oorvi in Motion</h2>
             </Reveal>
-            <ReelsSection reels={reels} />
+            <ReelsGrid reels={reels} />
           </div>
         </section>
       )}
