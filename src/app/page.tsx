@@ -5,7 +5,6 @@ import Link from "next/link";
 import { getPrisma } from "@/lib/prisma";
 import { CuratedProductGrid } from "@/components/CuratedProductGrid";
 import { HeroPeekCarousel } from "@/components/HeroPeekCarousel";
-import { PromoSlider } from "@/components/PromoSlider";
 import { SectionHeading } from "@/components/SectionHeading";
 import { ReelsGrid } from "@/components/ReelsGrid";
 import { Reveal } from "@/components/Reveal";
@@ -23,7 +22,6 @@ import type {
   AdminTestimonial,
   HomepageSection,
   HeroSlideAdmin,
-  PromoStrip,
   TrustBadge,
 } from "@/lib/admin-store";
 
@@ -47,11 +45,6 @@ const defaultHeroSlides: HeroSlideAdmin[] = heroSlides.map((s, i) => ({
   image: s.image,
   enabled: true,
 }));
-
-const defaultPromoStrips: PromoStrip[] = [
-  { id: "promo-slide-1", position: "Homepage slider", title: "New Collection", link: "/jewellery", image: productImages[6], enabled: true },
-  { id: "promo-slide-2", position: "Homepage slider", title: "Festive Sale", link: "/jewellery", image: productImages[2], enabled: true },
-];
 
 const defaultCollections: AdminCollection[] = [
   { id: "bridal", title: "Bridal", slug: "bridal", image: collectionImages.Bridal, productSlugs: [], enabled: true },
@@ -109,9 +102,8 @@ export default async function Home() {
   const db = await getSiteConfig();
 
   // Banners
-  const banners = db.banners as { heroSlidesAdmin?: HeroSlideAdmin[]; promoStrips?: PromoStrip[] } | undefined;
+  const banners = db.banners as { heroSlidesAdmin?: HeroSlideAdmin[] } | undefined;
   const heroSlidesAdmin: HeroSlideAdmin[] = banners?.heroSlidesAdmin ?? defaultHeroSlides;
-  const promoStrips: PromoStrip[] = banners?.promoStrips ?? defaultPromoStrips;
 
   // Sections
   const homepageSections: HomepageSection[] = (db.homepage as HomepageSection[]) ?? defaultSections;
@@ -131,7 +123,6 @@ export default async function Home() {
     .filter((s) => s.enabled)
     .map((s) => ({ image: s.image, href: s.link, alt: s.title }));
 
-  const homeSlides = promoStrips.filter((p) => p.position === "Homepage slider" && p.enabled !== false);
   const liveCollections = collections.filter((c) => c.enabled);
   const [heroCollection, ...restCollections] = liveCollections;
   const liveTestimonials = testimonials
@@ -205,13 +196,10 @@ export default async function Home() {
         )}
       </div>
 
-      {/* Promo slider — full bleed */}
-      {isOn("offer-banner") && <PromoSlider slides={homeSlides} />}
-
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10">
-        {/* New Arrivals */}
-        {isOn("new-arrivals") && (
-          <section className="py-12 sm:py-[90px]">
+      {/* New Arrivals — full bleed, distinct background */}
+      {isOn("new-arrivals") && (
+        <section className="bg-[#F4ECDC] py-12 sm:py-[90px]">
+          <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10">
             <Reveal className="flex items-end justify-between mb-11">
               <div>
                 <p className="text-xs tracking-[5px] uppercase text-gold mb-3.5">Just landed</p>
@@ -222,9 +210,11 @@ export default async function Home() {
               </Link>
             </Reveal>
             <CuratedProductGrid slugs={newArrivalsSlugs} badge="New" />
-          </section>
-        )}
+          </div>
+        </section>
+      )}
 
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10">
         {/* Collections bento */}
         {isOn("collections") && heroCollection && (
           <section className="py-12 sm:py-[90px]">
