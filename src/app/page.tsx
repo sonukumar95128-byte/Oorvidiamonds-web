@@ -59,6 +59,7 @@ const defaultCollections: AdminCollection[] = [
   { id: "bridal", title: "Bridal", slug: "bridal", image: collectionImages.Bridal, productSlugs: [], enabled: true },
   { id: "everyday-light", title: "Everyday Light", slug: "everyday-light", image: collectionImages["Everyday Light"], productSlugs: [], enabled: true },
   { id: "gifting", title: "Gifting", slug: "gifting", image: collectionImages.Gifting, productSlugs: [], enabled: true },
+  { id: "oorvi-diamond", title: "Oorvi Diamond", slug: "oorvi-diamond", image: collectionImages["Oorvi Diamond"], productSlugs: [], enabled: true },
 ];
 
 const defaultTestimonials: AdminTestimonial[] = dummyTestimonials.map((t, i) => ({
