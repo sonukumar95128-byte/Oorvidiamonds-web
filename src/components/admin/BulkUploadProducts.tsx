@@ -42,7 +42,7 @@ export function BulkUploadPanel({ open }: { open: boolean }) {
   if (!open) return null;
 
   const handleDownloadTemplate = () => {
-    downloadCsv("lakshiraah-product-upload-template.csv", [TEMPLATE_HEADERS, TEMPLATE_SAMPLE_ROW]);
+    downloadCsv("oorvi-product-upload-template.csv", [TEMPLATE_HEADERS, TEMPLATE_SAMPLE_ROW]);
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

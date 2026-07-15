@@ -1,12 +1,12 @@
 import { LegalPage } from "@/components/LegalPage";
 
-export const metadata = { title: "Terms & Conditions — Lakshiraah" };
+export const metadata = { title: "Terms & Conditions — Oorvi Diamonds" };
 
 export default function TermsPage() {
   return (
     <LegalPage title="Terms & Conditions">
       <p>
-        By using the Lakshiraah website and placing an order with us, you agree to the following terms.
+        By using the Oorvi Diamonds website and placing an order with us, you agree to the following terms.
       </p>
 
       <h2>Products</h2>
@@ -36,7 +36,7 @@ export default function TermsPage() {
 
       <h2>Limitation of liability</h2>
       <p>
-        Lakshiraah is not liable for indirect or consequential damages arising from the use of this website or
+        Oorvi Diamonds is not liable for indirect or consequential damages arising from the use of this website or
         our products, to the extent permitted by law.
       </p>
 

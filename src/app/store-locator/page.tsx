@@ -1,12 +1,12 @@
-export const metadata = { title: "Store Locator — Lakshiraah" };
+export const metadata = { title: "Store Locator — Oorvi Diamonds" };
 
 export default function StoreLocatorPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 py-12">
-      <h1 className="font-heading italic text-3xl text-brand mb-6">Store Locator</h1>
+      <h1 className="font-heading text-3xl text-brand mb-6">Store Locator</h1>
 
       <div className="rounded-xl border border-beige bg-white p-6">
-        <p className="text-sm font-medium text-brand mb-1">Lakshiraah — Flagship Store</p>
+        <p className="text-sm font-medium text-brand mb-1">Oorvi Diamonds — Flagship Store</p>
         <p className="text-sm text-ink/70 mb-3">
           [Store address] · [City, State, Pincode]
         </p>

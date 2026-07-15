@@ -12,11 +12,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="w-56 shrink-0 sticky top-0 h-screen border-r border-beige bg-brand flex flex-col">
         <div className="px-5 py-5 border-b border-gold-light/15 shrink-0">
           <Image
-            src="/brand/lakshiraah-logo.png"
-            alt="Lakshiraah"
+            src="/brand/oorvi-logo.png"
+            alt="Oorvi Diamonds"
             width={180}
             height={50}
-            className="h-10 w-auto object-contain"
+            className="h-10 w-auto object-contain rounded-md"
             priority
           />
           <p className="mt-1 text-xs text-gold-light/50">Admin panel</p>

@@ -8,7 +8,7 @@ export default function ContactPage() {
 
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NUMBER ?? "";
   const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    `Hi Lakshiraah, my name is ${name || "[name]"}.\n\n${message || "[message]"}`
+    `Hi Oorvi Diamonds, my name is ${name || "[name]"}.\n\n${message || "[message]"}`
   )}`;
 
   return (
@@ -25,7 +25,7 @@ export default function ContactPage() {
         </p>
         <p>
           <span className="text-ink/50">Email:</span>{" "}
-          <span className="text-brand font-medium">hello@lakshiraah.in</span>
+          <span className="text-brand font-medium">hello@oorvidiamonds.com</span>
         </p>
         <p>
           <span className="text-ink/50">Hours:</span> Mon-Sat, 10am-7pm IST

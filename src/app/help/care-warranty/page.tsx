@@ -1,6 +1,6 @@
 import { LegalPage } from "@/components/LegalPage";
 
-export const metadata = { title: "Care & Warranty — Lakshiraah" };
+export const metadata = { title: "Care & Warranty — Oorvi Diamonds" };
 
 export default function CareWarrantyPage() {
   return (
@@ -15,7 +15,7 @@ export default function CareWarrantyPage() {
 
       <h2>Lifetime maintenance</h2>
       <p>
-        Every Lakshiraah piece comes with complimentary lifetime maintenance — polishing, cleaning, and minor
+        Every Oorvi Diamonds piece comes with complimentary lifetime maintenance — polishing, cleaning, and minor
         repairs (such as clasp tightening) at no extra cost. Contact us to arrange a maintenance visit.
       </p>
 

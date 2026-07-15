@@ -1,12 +1,12 @@
 import { LegalPage } from "@/components/LegalPage";
 
-export const metadata = { title: "Privacy Policy — Lakshiraah" };
+export const metadata = { title: "Privacy Policy — Oorvi Diamonds" };
 
 export default function PrivacyPage() {
   return (
     <LegalPage title="Privacy Policy">
       <p>
-        Lakshiraah (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) respects your privacy. This policy
+        Oorvi Diamonds (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) respects your privacy. This policy
         explains what information we collect, how we use it, and the choices you have.
       </p>
 

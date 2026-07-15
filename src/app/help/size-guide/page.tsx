@@ -1,6 +1,6 @@
 import { LegalPage } from "@/components/LegalPage";
 
-export const metadata = { title: "Size Guide — Lakshiraah" };
+export const metadata = { title: "Size Guide — Oorvi Diamonds" };
 
 export default function SizeGuidePage() {
   return (

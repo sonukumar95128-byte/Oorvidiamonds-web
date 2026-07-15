@@ -44,14 +44,14 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <p className="font-heading italic text-3xl text-brand">Lakshiraah</p>
-            <p className="text-xs text-ink/40 tracking-widest uppercase mt-0.5">Luxurious Concepts</p>
+            <p className="font-heading text-3xl text-brand">Oorvi Diamonds</p>
+            <p className="text-xs text-ink/40 tracking-widest uppercase mt-0.5">Fine Diamond Jewellery</p>
           </Link>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-beige p-8">
           <h1 className="font-heading italic text-2xl text-brand mb-1">Create account</h1>
-          <p className="text-sm text-ink/50 mb-6">Join Lakshiraah for exclusive offers &amp; order tracking</p>
+          <p className="text-sm text-ink/50 mb-6">Join Oorvi Diamonds for exclusive offers &amp; order tracking</p>
 
           {error && (
             <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">

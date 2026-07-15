@@ -95,7 +95,7 @@ export default function CheckoutPage() {
   // Generate UPI QR code when reaching payment step
   useEffect(() => {
     if (step !== 2 || !settings.upiId) return;
-    const upiUrl = `upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=${encodeURIComponent("Lakshiraah")}&am=${total}&cu=INR&tn=${encodeURIComponent(orderId ?? "Jewellery Order")}`;
+    const upiUrl = `upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=${encodeURIComponent("Oorvi Diamonds")}&am=${total}&cu=INR&tn=${encodeURIComponent(orderId ?? "Jewellery Order")}`;
     QRCode.toDataURL(upiUrl, { width: 220, margin: 2 })
       .then(setQrDataUrl)
       .catch(() => {});
@@ -260,7 +260,7 @@ export default function CheckoutPage() {
                 {/* UPI deep link button — works on mobile */}
                 {settings.upiId && (
                   <a
-                    href={`upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=Lakshiraah&am=${total}&cu=INR&tn=${encodeURIComponent(orderId ?? "Jewellery Order")}`}
+                    href={`upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=Oorvi%20Diamonds&am=${total}&cu=INR&tn=${encodeURIComponent(orderId ?? "Jewellery Order")}`}
                     className="w-full rounded-full bg-[#5f259f] text-white text-sm font-medium py-3 text-center hover:bg-[#4a1a80] transition-colors"
                   >
                     📱 Open UPI App to Pay

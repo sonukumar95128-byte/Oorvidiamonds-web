@@ -24,7 +24,7 @@ export function buildWhatsAppOrderUrl(order: OrderDetails): string {
   const businessNumber = process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NUMBER ?? "";
 
   const lines = [
-    "Hi Lakshiraah, I'd like to place this order:",
+    "Hi Oorvi Diamonds, I'd like to place this order:",
     "",
     ...order.items.map((i) => `• ${i.name} x${i.quantity} — ${formatRupee(i.lineTotal)}`),
     "",
