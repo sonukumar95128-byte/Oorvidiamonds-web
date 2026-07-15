@@ -111,12 +111,15 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 text-xs font-light text-gold-light/45">
-          <p>© {new Date().getFullYear()} Oorvi Diamonds. All rights reserved.</p>
+        <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-4 pt-6 text-xs font-light text-gold-light/45 text-center sm:text-left">
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-gold-light/80">Privacy</Link>
             <Link href="/terms" className="hover:text-gold-light/80">Terms</Link>
             <Link href="/help/shipping-returns" className="hover:text-gold-light/80">Shipping & Returns</Link>
+          </div>
+          <div className="sm:text-right leading-relaxed">
+            <p>A-607, Kakade City, Karvenagar, Pune 411052</p>
+            <p>WhatsApp: +91 70574 18065 · © {new Date().getFullYear()} Oorvi Diamonds</p>
           </div>
         </div>
       </div>

@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
-import { getUserSession } from "@/lib/session";
 
+// No auth required — checkout supports guest orders.
 export async function POST(request: NextRequest) {
-  const userId = await getUserSession();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
 

@@ -17,6 +17,7 @@ import { SizeGuideModal } from "@/components/SizeGuideModal";
 
 type ProductPurchasePanelProps = {
   slug: string;
+  sku: string;
   name: string;
   price: string;
   originalPrice?: string;
@@ -37,6 +38,7 @@ function discountPercent(price: string, originalPrice?: string): number | null {
 
 export function ProductPurchasePanel({
   slug,
+  sku,
   name,
   price,
   originalPrice,
@@ -51,8 +53,11 @@ export function ProductPurchasePanel({
   const { isWishlisted, toggleWishlist } = useWishlist();
   const wishlisted = isWishlisted(slug);
   const [color, setColor] = useState(colorOptions[2].label);
-  const [purity, setPurity] = useState(purityOptions[0]);
+  const goldKarat = attributes?.["Gold Karat"] ?? purityOptions[0];
+  const purityChoices = ["14K", "18K"];
+  const [purity, setPurity] = useState(purityChoices[0]);
   const sizeOptions = getSizeOptions(category);
+  const sizeLabel = category === "Rings" ? "Ring Size" : category === "Bracelets" ? "Bracelet Size" : "Length";
   const [size, setSize] = useState(sizeOptions[0]);
   const [pincode, setPincode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
@@ -87,7 +92,7 @@ export function ProductPurchasePanel({
           <table className="w-full text-[13.5px]">
             <tbody>
               {[
-                [purity, breakup.gold],
+                [goldKarat, breakup.gold],
                 ["Diamond", breakup.diamond],
                 ["Other Stones", breakup.otherStones],
                 ["Making Charge", breakup.making],
@@ -130,6 +135,8 @@ export function ProductPurchasePanel({
         <span className="text-ink/50">{rating.toFixed(1)} · {reviewCount} reviews</span>
         <span className="text-ink/30">·</span>
         <span className="text-[#1F7A45]">In stock</span>
+        <span className="text-ink/30">·</span>
+        <span className="text-ink/50 tracking-[1px]">SKU: {sku}</span>
       </div>
 
       <div className="flex items-baseline gap-3.5 flex-wrap">
@@ -165,9 +172,9 @@ export function ProductPurchasePanel({
         </div>
       )}
 
-      {/* Metal */}
-      <div className="text-xs tracking-[2px] uppercase text-brand mb-3">Metal</div>
-      <div className="flex flex-wrap gap-3 mb-7">
+      {/* Gold Colour */}
+      <div className="text-xs tracking-[2px] uppercase text-brand mb-3">Gold Colour</div>
+      <div className="flex flex-wrap gap-3 mb-6">
         {colorOptions.map((c) => (
           <button
             key={c.label}
@@ -178,55 +185,55 @@ export function ProductPurchasePanel({
             }
           >
             <span className="h-3.5 w-3.5 rounded-full border border-black/15" style={{ background: c.swatch }} />
-            {purity} {c.label} Gold
+            {c.label} Gold
           </button>
         ))}
       </div>
 
-      {/* Ring size */}
+      {/* Gold Purity */}
+      <div className="text-xs tracking-[2px] uppercase text-brand mb-3">Gold Purity</div>
+      <div className="flex flex-wrap gap-3 mb-7">
+        {purityChoices.map((p) => (
+          <button
+            key={p}
+            onClick={() => setPurity(p)}
+            className={
+              "rounded-full px-[22px] py-[10px] text-[13.5px] border transition-colors " +
+              (purity === p ? "bg-brand border-brand text-gold-light" : "bg-white border-[#D8C6A4] text-ink/80 hover:border-brand")
+            }
+          >
+            {p}
+          </button>
+        ))}
+      </div>
+
+      {/* Size */}
       {sizeOptions.length > 0 && (
         <>
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs tracking-[2px] uppercase text-brand">Ring Size</span>
+            <span className="text-xs tracking-[2px] uppercase text-brand">
+              {sizeLabel}
+              {category === "Rings" && <span className="normal-case tracking-normal text-ink/50"> (Indian)</span>}
+            </span>
             <button onClick={() => setShowSizeGuide(true)} className="text-[13px] text-gold border-b border-[#D8C6A4] hover:text-brand transition-colors">
               Size guide
             </button>
           </div>
-          <div className="flex flex-wrap gap-2.5 mb-7">
-            {sizeOptions.map((s) => (
-              <button
-                key={s}
-                onClick={() => setSize(s)}
-                className={
-                  "min-w-[46px] h-[46px] rounded-lg text-sm border transition-colors " +
-                  (size === s ? "bg-brand border-brand text-gold-light" : "bg-white border-[#D8C6A4] text-ink/80 hover:border-brand")
-                }
-              >
-                {s}
-              </button>
-            ))}
+          <div className="mb-7">
+            <select
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+              className="w-full max-w-[320px] h-[50px] px-4 rounded-lg border border-[#D8C6A4] bg-white text-[14.5px] text-ink cursor-pointer outline-none focus:border-brand"
+            >
+              {sizeOptions.map((s) => (
+                <option key={s} value={s}>
+                  Size {s}
+                </option>
+              ))}
+            </select>
           </div>
         </>
       )}
-
-      {/* Purity — extra variant beyond the design's spec, kept for real product flexibility */}
-      <div className="mb-7">
-        <p className="text-xs tracking-[2px] uppercase text-brand mb-3">Purity</p>
-        <div className="flex gap-2">
-          {purityOptions.map((p) => (
-            <button
-              key={p}
-              onClick={() => setPurity(p)}
-              className={
-                "rounded-full border px-4 py-1.5 text-[13.5px] transition-colors " +
-                (purity === p ? "border-brand bg-brand text-gold-light" : "border-[#D8C6A4] text-ink/70 hover:border-brand")
-              }
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-      </div>
 
       <div className="flex items-center gap-3.5 mb-3.5">
         {inBag ? (
@@ -266,15 +273,17 @@ export function ProductPurchasePanel({
       {/* WhatsApp Buy Now */}
       {process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NUMBER && (
         <a
-          href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NUMBER}?text=${encodeURIComponent(`Hi Oorvi Diamonds, I'm interested in buying:\n\n*${name}*\nPrice: ${price}\n\nPlease help me with this order.`)}`}
+          href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NUMBER}?text=${encodeURIComponent(
+            `Hello Oorvi Diamonds! I want to buy: ${name} (SKU: ${sku}) — ${purity} ${color} Gold${size ? `, ${sizeLabel} ${size}` : ""} (${price}). Please share details.`
+          )}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-5 flex w-full items-center justify-center gap-2 rounded-lg bg-[#25D366] px-6 py-3 text-sm font-medium text-white hover:bg-[#1ebe5d] transition-colors"
+          className="mb-5 flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#25D366] px-6 py-[16px] text-[13.5px] tracking-[3px] uppercase font-medium text-white hover:bg-[#1ebe5a] transition-colors"
         >
-          <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 shrink-0">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
           </svg>
-          Buy Now on WhatsApp
+          Buy on WhatsApp
         </a>
       )}
 

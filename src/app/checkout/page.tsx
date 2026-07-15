@@ -1,13 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import QRCode from "qrcode";
 import { CheckoutStepper } from "@/components/CheckoutStepper";
 import { dummyProducts, formatRupee, priceToNumber } from "@/lib/dummy-images";
 import { useCart } from "@/lib/cart-store";
-import { useAdmin } from "@/lib/admin-store";
+
+declare global {
+  interface Window {
+    Razorpay: new (options: Record<string, unknown>) => { open: () => void };
+  }
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (window.Razorpay) return resolve(true);
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
 
 const countryCodes = ["+91", "+1", "+44", "+971", "+65"];
 const countries = ["India", "United States", "United Kingdom", "United Arab Emirates", "Singapore"];
@@ -38,15 +53,14 @@ const emptyAddress: Address = {
 
 export default function CheckoutPage() {
   const { items: cart, clearCart } = useCart();
-  const { settings } = useAdmin();
   const [step, setStep] = useState(1);
   const [address, setAddress] = useState<Address>(emptyAddress);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
   const [placed, setPlaced] = useState(false);
-  const [utrInput, setUtrInput] = useState("");
-  const [qrDataUrl, setQrDataUrl] = useState("");
+  const [payError, setPayError] = useState("");
   const orderSavedRef = useRef(false);
+  const orderIdRef = useRef<string | null>(null);
 
   const cartItems = cart
     .map((line) => {
@@ -86,37 +100,80 @@ export default function CheckoutPage() {
         }),
       });
       const data = await res.json();
-      if (data.orderId) setOrderId(data.orderId);
+      if (data.orderId) {
+        setOrderId(data.orderId);
+        orderIdRef.current = data.orderId;
+      }
     } catch {
       // silently ignore — order capture optional
     }
   };
 
-  // Generate UPI QR code when reaching payment step
-  useEffect(() => {
-    if (step !== 2 || !settings.upiId) return;
-    const upiUrl = `upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=${encodeURIComponent("Oorvi Diamonds")}&am=${total}&cu=INR&tn=${encodeURIComponent(orderId ?? "Jewellery Order")}`;
-    QRCode.toDataURL(upiUrl, { width: 220, margin: 2 })
-      .then(setQrDataUrl)
-      .catch(() => {});
-  }, [step, settings.upiId, total, orderId]);
-
-  const handleConfirmPayment = async () => {
+  const handlePayWithRazorpay = async () => {
+    setPayError("");
     setPlacing(true);
     try {
-      if (orderId) {
-        await fetch("/api/orders", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: orderId, status: "paid", utrNumber: utrInput }),
-        });
+      const scriptOk = await loadRazorpayScript();
+      if (!scriptOk) {
+        setPayError("Couldn't load the payment gateway. Check your connection and try again.");
+        setPlacing(false);
+        return;
       }
-      clearCart();
-      setPlaced(true);
+
+      const orderRes = await fetch("/api/razorpay/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amountInPaise: total * 100, receipt: orderIdRef.current ?? undefined }),
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) {
+        setPayError(orderData.error === "Razorpay not configured"
+          ? "Online payment isn't set up yet — please contact us to complete your order."
+          : "Couldn't start payment. Please try again.");
+        setPlacing(false);
+        return;
+      }
+
+      const razorpay = new window.Razorpay({
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        order_id: orderData.orderId,
+        name: "Oorvi Diamonds",
+        description: `${cartItems.length} item${cartItems.length > 1 ? "s" : ""}`,
+        prefill: {
+          name: address.fullName,
+          contact: `${address.countryCode}${address.phone}`,
+        },
+        theme: { color: "#40080D" },
+        handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+          try {
+            const verifyRes = await fetch("/api/razorpay/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ...response, orderId: orderIdRef.current }),
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyRes.ok && verifyData.ok) {
+              clearCart();
+              setPlaced(true);
+            } else {
+              setPayError("Payment could not be verified. If money was deducted, please contact us with your payment ID.");
+            }
+          } catch {
+            setPayError("Payment could not be verified. If money was deducted, please contact us with your payment ID.");
+          }
+          setPlacing(false);
+        },
+        modal: {
+          ondismiss: () => setPlacing(false),
+        },
+      });
+      razorpay.open();
     } catch {
-      setPlaced(true);
+      setPayError("Something went wrong starting payment. Please try again.");
+      setPlacing(false);
     }
-    setPlacing(false);
   };
 
   if (placed) {
@@ -233,71 +290,38 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          {/* Step 2 — UPI Payment */}
+          {/* Step 2 — Payment */}
           {step === 2 && (
             <div>
-              <h2 className="text-sm font-medium text-brand mb-1">Pay via UPI</h2>
-              <p className="text-xs text-ink/50 mb-5">Scan the QR code or click the button to open your UPI app</p>
+              <h2 className="text-sm font-medium text-brand mb-1">Payment</h2>
+              <p className="text-xs text-ink/50 mb-5">Pay securely by card, UPI, netbanking, or wallet via Razorpay</p>
 
-              <div className="rounded-xl border border-beige bg-white p-6 flex flex-col items-center gap-4 max-w-sm">
-                {/* QR Code */}
-                {qrDataUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={qrDataUrl} alt="UPI QR Code" className="w-52 h-52 rounded-lg" />
-                ) : settings.upiId ? (
-                  <div className="w-52 h-52 rounded-lg bg-beige animate-pulse" />
-                ) : (
-                  <div className="w-52 h-52 rounded-lg bg-beige flex items-center justify-center text-xs text-ink/40 text-center p-4">
-                    UPI ID not set.<br />Admin → Settings → UPI Payment
-                  </div>
-                )}
+              <div className="rounded-xl border border-beige bg-white p-6 max-w-sm">
+                <p className="text-xs text-ink/50 mb-1">Amount to pay</p>
+                <p className="text-2xl font-semibold text-brand mb-5">{formatRupee(total)}</p>
 
-                <div className="text-center">
-                  <p className="text-2xl font-semibold text-brand">{formatRupee(total)}</p>
-                  <p className="text-xs text-ink/50 mt-0.5">{settings.upiId || "—"}</p>
-                </div>
-
-                {/* UPI deep link button — works on mobile */}
-                {settings.upiId && (
-                  <a
-                    href={`upi://pay?pa=${encodeURIComponent(settings.upiId)}&pn=Oorvi%20Diamonds&am=${total}&cu=INR&tn=${encodeURIComponent(orderId ?? "Jewellery Order")}`}
-                    className="w-full rounded-full bg-[#5f259f] text-white text-sm font-medium py-3 text-center hover:bg-[#4a1a80] transition-colors"
-                  >
-                    📱 Open UPI App to Pay
-                  </a>
-                )}
-              </div>
-
-              {/* UTR / reference input */}
-              <div className="mt-6 max-w-sm">
-                <label className="block text-xs text-ink/60 mb-1">Enter payment reference / UTR number <span className="text-ink/30">(optional)</span></label>
-                <input
-                  value={utrInput}
-                  onChange={(e) => setUtrInput(e.target.value)}
-                  placeholder="e.g. 123456789012"
-                  className="w-full rounded-lg border border-beige px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
-                />
-                <p className="text-xs text-ink/40 mt-1">Found in your UPI app after payment</p>
-              </div>
-
-              <div className="mt-5 flex gap-3">
                 <button
-                  onClick={() => setStep(1)}
-                  className="rounded-full border border-beige px-6 py-3 text-sm text-ink/70 hover:border-gold transition-colors"
-                >
-                  ← Back
-                </button>
-                <button
-                  onClick={handleConfirmPayment}
+                  onClick={handlePayWithRazorpay}
                   disabled={placing}
-                  className="rounded-full bg-brand px-6 py-3 text-sm font-medium text-gold-light hover:bg-brand-secondary disabled:opacity-60 transition-colors"
+                  className="w-full rounded-full bg-brand px-6 py-3.5 text-sm font-medium text-gold-light hover:bg-brand-secondary disabled:opacity-60 transition-colors"
                 >
-                  {placing ? "Confirming…" : "I've paid — Confirm order ✓"}
+                  {placing ? "Opening payment…" : `Pay ${formatRupee(total)} securely`}
                 </button>
+                <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-ink/40">🔒 Powered by Razorpay</p>
               </div>
-              <p className="mt-3 text-xs text-ink/40">
-                Your order will be verified by our team within 24 hours after payment confirmation.
-              </p>
+
+              {payError && (
+                <p className="mt-4 max-w-sm rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                  {payError}
+                </p>
+              )}
+
+              <button
+                onClick={() => setStep(1)}
+                className="mt-5 rounded-full border border-beige px-6 py-3 text-sm text-ink/70 hover:border-gold transition-colors"
+              >
+                ← Back
+              </button>
             </div>
           )}
         </div>
