@@ -3,13 +3,15 @@ export const dynamic = "force-dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { getPrisma } from "@/lib/prisma";
+import { CategoryCarousel } from "@/components/CategoryCarousel";
 import { CuratedProductGrid } from "@/components/CuratedProductGrid";
 import { HeroPeekCarousel } from "@/components/HeroPeekCarousel";
-import { SectionHeading } from "@/components/SectionHeading";
 import { ReelsGrid } from "@/components/ReelsGrid";
 import { Reveal } from "@/components/Reveal";
 import {
+  categories,
   categoryImages as defaultCategoryImages,
+  categoryToSlug,
   dummyProducts,
   dummyTestimonials,
   heroSlides,
@@ -74,13 +76,6 @@ const instaPosts = productImages.slice(0, 5).map((image, i) => ({
   image,
   likes: ["2,148", "1,872", "3,021", "1,540", "2,689"][i],
 }));
-
-const categoryTiles = [
-  { name: "Diamond Rings", href: "/jewellery/rings", imageKey: "Rings" as const },
-  { name: "Necklaces & Pendants", href: "/jewellery/necklaces", imageKey: "Necklaces" as const },
-  { name: "Earrings", href: "/jewellery/earrings", imageKey: "Earrings" as const },
-  { name: "Bangles & Bracelets", href: "/jewellery/bracelets", imageKey: "Bracelets" as const },
-];
 
 async function getSiteConfig() {
   try {
@@ -150,25 +145,13 @@ export default async function Home() {
               <p className="text-xs tracking-[5px] uppercase text-gold mb-3.5">Curated for you</p>
               <h2 className="font-heading text-4xl sm:text-[44px] text-brand">Shop by Category</h2>
             </Reveal>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 sm:gap-[26px]">
-              {categoryTiles.map((tile, i) => (
-                <Reveal key={tile.name} delay={i * 0.08}>
-                  <Link href={tile.href} className="block text-center group">
-                    <div className="relative aspect-[3/3.6] overflow-hidden bg-beige">
-                      <Image
-                        src={catImages[tile.imageKey] || defaultCategoryImages[tile.imageKey] || ""}
-                        alt={tile.name}
-                        fill
-                        sizes="(min-width:640px) 25vw, 50vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="font-heading text-lg sm:text-2xl text-brand mt-4">{tile.name}</div>
-                    <div className="text-[11px] tracking-[2.5px] uppercase text-gold mt-1.5">Explore →</div>
-                  </Link>
-                </Reveal>
-              ))}
-            </div>
+            <CategoryCarousel
+              items={categories.map((c) => ({
+                name: c,
+                href: `/jewellery/${categoryToSlug(c)}`,
+                image: catImages[c] || defaultCategoryImages[c] || "",
+              }))}
+            />
           </section>
         )}
 
@@ -210,6 +193,23 @@ export default async function Home() {
               </Link>
             </Reveal>
             <CuratedProductGrid slugs={newArrivalsSlugs} badge="New" />
+          </div>
+        </section>
+      )}
+
+      {/* Assurance strip — full bleed, dark background */}
+      {isOn("trust-badges") && (
+        <section className="bg-brand py-12 sm:py-[70px]">
+          <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-[26px] text-center">
+            {liveTrustBadges.map((b, i) => (
+              <Reveal key={b.id} delay={i * 0.08} className="flex flex-col items-center gap-3.5">
+                <div className="h-[54px] w-[54px] border border-gold rotate-45 flex items-center justify-center">
+                  <span className="-rotate-45 font-heading text-xl text-gold">{b.icon}</span>
+                </div>
+                <div className="font-heading text-lg sm:text-xl text-gold-light mt-1.5">{b.label}</div>
+                <p className="text-xs sm:text-[13.5px] font-light text-gold-light/60 leading-relaxed max-w-[220px]">{b.sub}</p>
+              </Reveal>
+            ))}
           </div>
         </section>
       )}
@@ -260,6 +260,87 @@ export default async function Home() {
       )}
 
       <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10">
+        {/* Testimonials */}
+        {isOn("testimonials") && (
+          <section className="py-12 sm:py-[90px]">
+            <Reveal className="text-center mb-12">
+              <p className="text-xs tracking-[5px] uppercase text-gold mb-3.5">Loved by many</p>
+              <h2 className="font-heading text-4xl sm:text-[44px] text-brand">What Our Customers Say</h2>
+              <p className="font-light text-sm sm:text-base text-ink/60 mt-3.5">★ 4.8 average · 12,400+ verified reviews</p>
+            </Reveal>
+            <Reveal className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-[26px]">
+              {liveTestimonials.map((t) => (
+                <div key={t.id} className="bg-white border border-beige p-6">
+                  <div className="text-gold text-sm mb-3">{"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}</div>
+                  <p className="text-[15px] text-ink/80 leading-relaxed mb-5">{t.text}</p>
+                  <div className="flex items-center gap-3">
+                    {t.avatar ? (
+                      <div className="relative h-9 w-9 rounded-full overflow-hidden shrink-0">
+                        <Image src={t.avatar} alt={t.name} fill sizes="36px" className="object-cover" />
+                      </div>
+                    ) : (
+                      <div className="h-9 w-9 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm font-medium shrink-0">
+                        {t.name.charAt(0)}
+                      </div>
+                    )}
+                    <span className="font-heading text-lg text-brand">{t.name}</span>
+                    <span className="text-xs tracking-[1px] uppercase text-gold ml-auto">✓ verified</span>
+                  </div>
+                </div>
+              ))}
+              {liveTestimonials.length === 0 && (
+                <p className="col-span-full text-center text-sm text-ink/40 py-8">No approved testimonials yet.</p>
+              )}
+            </Reveal>
+          </section>
+        )}
+      </div>
+
+      {/* Brand story — dark section */}
+      <section className="bg-brand text-gold-light/90">
+        <div className="mx-auto max-w-[1360px] grid grid-cols-1 lg:grid-cols-2 items-center">
+          <div className="relative h-[320px] lg:h-[560px]">
+            <Image
+              src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=900&h=1000&fit=crop"
+              alt="Diamond craftsmanship"
+              fill
+              sizes="(min-width:1024px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <Reveal className="px-6 sm:px-10 lg:px-20 py-16 lg:py-20">
+            <p className="text-xs tracking-[5px] uppercase text-gold-light/70 mb-4.5">The House of Oorvi</p>
+            <h2 className="font-heading text-3xl sm:text-[44px] leading-[1.15] text-gold-light mb-6">
+              Every diamond tells a story of light
+            </h2>
+            <p className="font-light text-[15px] sm:text-base leading-[1.85] text-gold-light/70 mb-8">
+              Each Oorvi piece begins with a hand-selected, certified diamond and is brought to life by
+              master craftsmen. From the first sketch to the final polish, we honour a tradition of
+              excellence — so what you wear isn&apos;t just jewellery, it&apos;s a legacy.
+            </p>
+            <div className="grid grid-cols-3 sm:flex sm:flex-nowrap sm:items-center gap-y-3 sm:gap-x-11 mb-9">
+              {[
+                { stat: "100%", label: "Certified diamonds" },
+                { stat: "BIS", label: "Hallmarked gold" },
+                { stat: "Lifetime", label: "Exchange promise" },
+              ].map((s, i) => (
+                <div key={s.label} className="flex items-center justify-center sm:justify-start gap-x-3 sm:gap-x-11">
+                  {i > 0 && <div className="hidden sm:block w-px h-10 bg-gold-light/25" />}
+                  <div className="text-center sm:text-left">
+                    <div className="font-heading text-lg sm:text-4xl text-gold">{s.stat}</div>
+                    <div className="text-[8.5px] sm:text-[11px] tracking-[0.5px] sm:tracking-[2px] uppercase text-gold-light/50 mt-1 leading-tight">{s.label}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Link href="/about" className="inline-block border border-gold text-gold-light px-9 py-3.5 text-xs tracking-[2.5px] uppercase hover:bg-gold/10 transition-colors">
+              Read Our Story
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10">
         {/* Instagram */}
         <section className="py-12 sm:py-[90px]">
           <Reveal className="text-center mb-12">
@@ -295,98 +376,6 @@ export default async function Home() {
             </a>
           </div>
         </section>
-      </div>
-
-      {/* Brand story — dark section */}
-      <section className="bg-brand text-gold-light/90">
-        <div className="mx-auto max-w-[1360px] grid grid-cols-1 lg:grid-cols-2 items-center">
-          <div className="relative h-[320px] lg:h-[560px]">
-            <Image
-              src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=900&h=1000&fit=crop"
-              alt="Diamond craftsmanship"
-              fill
-              sizes="(min-width:1024px) 50vw, 100vw"
-              className="object-cover"
-            />
-          </div>
-          <Reveal className="px-6 sm:px-10 lg:px-20 py-16 lg:py-20">
-            <p className="text-xs tracking-[5px] uppercase text-gold-light/70 mb-4.5">The House of Oorvi</p>
-            <h2 className="font-heading text-3xl sm:text-[44px] leading-[1.15] text-gold-light mb-6">
-              Every diamond tells a story of light
-            </h2>
-            <p className="font-light text-[15px] sm:text-base leading-[1.85] text-gold-light/70 mb-8">
-              Each Oorvi piece begins with a hand-selected, certified diamond and is brought to life by
-              master craftsmen. From the first sketch to the final polish, we honour a tradition of
-              excellence — so what you wear isn&apos;t just jewellery, it&apos;s a legacy.
-            </p>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-5 sm:gap-x-11 mb-9">
-              {[
-                { stat: "100%", label: "Certified diamonds" },
-                { stat: "BIS", label: "Hallmarked gold" },
-                { stat: "Lifetime", label: "Exchange promise" },
-              ].map((s, i) => (
-                <div key={s.label} className="flex items-center gap-x-6 sm:gap-x-11">
-                  {i > 0 && <div className="w-px h-10 bg-gold-light/25 hidden sm:block" />}
-                  <div>
-                    <div className="font-heading text-3xl sm:text-4xl text-gold">{s.stat}</div>
-                    <div className="text-[11px] tracking-[2px] uppercase text-gold-light/50 mt-1">{s.label}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <Link href="/about" className="inline-block border border-gold text-gold-light px-9 py-3.5 text-xs tracking-[2.5px] uppercase hover:bg-gold/10 transition-colors">
-              Read Our Story
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10">
-        {/* Assurance strip */}
-        {isOn("trust-badges") && (
-          <section className="py-12 sm:py-[70px] grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-[26px] text-center">
-            {liveTrustBadges.map((b, i) => (
-              <Reveal key={b.id} delay={i * 0.08} className="flex flex-col items-center gap-3.5">
-                <div className="h-[54px] w-[54px] border border-gold rotate-45 flex items-center justify-center">
-                  <span className="-rotate-45 font-heading text-xl text-gold">{b.icon}</span>
-                </div>
-                <div className="font-heading text-lg sm:text-xl text-brand mt-1.5">{b.label}</div>
-                <p className="text-xs sm:text-[13.5px] font-light text-ink/60 leading-relaxed max-w-[220px]">{b.sub}</p>
-              </Reveal>
-            ))}
-          </section>
-        )}
-
-        {/* Testimonials */}
-        {isOn("testimonials") && (
-          <section className="pb-16 sm:pb-24">
-            <SectionHeading title="What our customers say" subtitle="★ 4.8 average · 12,400+ verified reviews" />
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {liveTestimonials.map((t) => (
-                <div key={t.id} className="rounded-lg border border-beige p-4">
-                  <div className="text-gold text-sm mb-2">{"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}</div>
-                  <p className="text-sm text-ink/80 leading-relaxed mb-3">{t.text}</p>
-                  <div className="flex items-center gap-2">
-                    {t.avatar ? (
-                      <div className="relative h-8 w-8 rounded-full overflow-hidden shrink-0">
-                        <Image src={t.avatar} alt={t.name} fill sizes="32px" className="object-cover" />
-                      </div>
-                    ) : (
-                      <div className="h-8 w-8 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm font-medium shrink-0">
-                        {t.name.charAt(0)}
-                      </div>
-                    )}
-                    <span className="text-sm font-medium text-brand">{t.name}</span>
-                    <span className="text-xs text-gold ml-auto">✓ verified</span>
-                  </div>
-                </div>
-              ))}
-              {liveTestimonials.length === 0 && (
-                <p className="col-span-full text-center text-sm text-ink/40 py-8">No approved testimonials yet.</p>
-              )}
-            </div>
-          </section>
-        )}
       </div>
     </div>
   );

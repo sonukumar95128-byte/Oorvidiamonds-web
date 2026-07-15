@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-import { Dropdown } from "@/components/Dropdown";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { InfiniteProductGrid } from "@/components/InfiniteProductGrid";
 import { getPriceRange, type DummyProduct } from "@/lib/dummy-images";
-import { useAdmin } from "@/lib/admin-store";
 
 type CategoryListingProps = {
   title: string;
@@ -16,9 +14,14 @@ type CategoryListingProps = {
   activeCategories?: string[];
 };
 
-export function CategoryListing({ title, pageId, fallbackBanner, products, activeCategories }: CategoryListingProps) {
-  const { pageBanners } = useAdmin();
-  const bannerImage = pageBanners[pageId] ?? fallbackBanner;
+const sortOptions = [
+  { value: "newest", label: "Newest" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+  { value: "bestselling", label: "Bestselling" },
+];
+
+export function CategoryListing({ title, products, activeCategories }: CategoryListingProps) {
   const { min, max } = getPriceRange(products);
   const [filterOpen, setFilterOpen] = useState(false);
   const [sort, setSort] = useState("newest");
@@ -32,50 +35,61 @@ export function CategoryListing({ title, pageId, fallbackBanner, products, activ
   });
 
   return (
-    <div>
-      {/* Banner — full bleed */}
-      <section className="relative aspect-[16/4] w-full overflow-hidden flex items-center justify-center">
-        <Image src={bannerImage} alt={title} fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-brand/45" />
-        <h1 className="relative z-10 font-heading italic text-3xl sm:text-4xl text-white">{title}</h1>
-      </section>
+    <div className="mx-auto max-w-[1460px] px-4 sm:px-6 lg:px-10 pt-8 pb-20">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2.5 text-[13.5px] text-ink/50 mb-5">
+        <Link href="/" className="hover:text-brand transition-colors">Home</Link>
+        <span>/</span>
+        <span className="text-brand">{title}</span>
+      </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
-        {/* Top bar — Filter button (mobile) + Sort */}
-        <div className="flex items-center justify-between mb-6">
-          {/* Filter button — mobile only */}
-          <button
-            onClick={() => setFilterOpen(true)}
-            className="lg:hidden flex items-center gap-2 rounded-full border border-gold bg-white px-4 py-2 text-sm text-brand hover:bg-gold/10 transition-colors"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4h18M7 12h10M11 20h2" />
-            </svg>
-            Filters
-          </button>
-          <span className="hidden lg:block" /> {/* spacer on desktop */}
-          <Dropdown
-            defaultValue="newest"
-            options={[
-              { value: "newest", label: "Sort: Newest" },
-              { value: "price-asc", label: "Price: Low to High" },
-              { value: "price-desc", label: "Price: High to Low" },
-              { value: "bestselling", label: "Bestselling" },
-            ]}
-            onChange={setSort}
-          />
+      {/* Title + count + sort */}
+      <div className="flex flex-wrap items-end justify-between gap-5 mb-7">
+        <div>
+          <h1 className="font-heading text-4xl sm:text-[44px] text-brand">{title}</h1>
+          <p className="text-sm text-ink/50 mt-2">{sortedProducts.length} designs</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs tracking-[1px] uppercase text-ink/50 shrink-0">Sort by</span>
+          <div className="flex flex-wrap gap-2">
+            {sortOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setSort(opt.value)}
+                className={
+                  "rounded-full px-4 py-2 text-[13px] transition-colors " +
+                  (sort === opt.value
+                    ? "bg-brand text-gold-light"
+                    : "bg-white border border-[#D8C6A4] text-ink/70 hover:border-brand")
+                }
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Filter button — mobile only */}
+      <button
+        onClick={() => setFilterOpen(true)}
+        className="lg:hidden mb-5 flex items-center gap-2 rounded-full border border-gold bg-white px-4 py-2 text-sm text-brand hover:bg-gold/10 transition-colors"
+      >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4h18M7 12h10M11 20h2" />
+        </svg>
+        Filters
+      </button>
+
+      <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-10 items-start">
+        {/* Desktop sidebar — always visible */}
+        <div className="hidden lg:block">
+          <FilterSidebar priceMin={min} priceMax={max} activeCategories={activeCategories} />
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-start gap-10">
-          {/* Desktop sidebar — always visible */}
-          <div className="hidden lg:block">
-            <FilterSidebar priceMin={min} priceMax={max} activeCategories={activeCategories} />
-          </div>
-
-          {/* Products */}
-          <div className="flex-1">
-            <InfiniteProductGrid products={sortedProducts} />
-          </div>
+        {/* Products */}
+        <div>
+          <InfiniteProductGrid products={sortedProducts} />
         </div>
       </div>
 

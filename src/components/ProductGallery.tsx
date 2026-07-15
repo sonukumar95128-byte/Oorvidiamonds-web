@@ -22,7 +22,7 @@ export function ProductGallery({ images, alt }: { images: string[]; alt: string 
 
   return (
     <div>
-      <div className="relative aspect-square rounded-xl overflow-hidden bg-beige border border-beige">
+      <div className="relative aspect-square rounded-2xl overflow-hidden bg-beige border border-beige">
         <button
           onClick={() => setZoomOpen(true)}
           aria-label="Zoom image"
