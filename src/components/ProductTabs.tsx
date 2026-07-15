@@ -50,8 +50,8 @@ export function ProductTabs({ productSlug, description, rating, reviewCount, att
             key={t}
             onClick={() => setActive(t)}
             className={
-              "pb-3 text-sm font-medium border-b-2 -mb-px transition-colors " +
-              (active === t ? "border-gold text-brand" : "border-transparent text-ink/50 hover:text-brand")
+              "pb-3 text-xs tracking-[1.5px] uppercase border-b-2 -mb-px transition-colors " +
+              (active === t ? "border-brand text-brand" : "border-transparent text-ink/50 hover:text-brand")
             }
           >
             {t}

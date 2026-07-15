@@ -18,8 +18,9 @@ export function RecentlyViewed({ excludeSlug }: { excludeSlug?: string }) {
 
   return (
     <div className="mt-12">
-      <h2 className="font-heading italic text-2xl text-brand mb-5">Recently Viewed</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-10">
+      <p className="text-xs tracking-[3px] uppercase text-gold mb-2">Continue browsing</p>
+      <h2 className="font-heading text-2xl text-brand mb-6">Recently Viewed</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 sm:gap-6">
         {items.map((p) => (
           <ProductCard
             key={p.slug}

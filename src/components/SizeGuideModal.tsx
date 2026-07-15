@@ -45,12 +45,12 @@ export function SizeGuideModal({ onClose }: SizeGuideModalProps) {
     >
       <div
         ref={dialogRef}
-        className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]"
+        className="relative w-full max-w-lg bg-white rounded-lg shadow-2xl overflow-y-auto max-h-[90vh]"
         role="dialog"
         aria-label="Size guide"
       >
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-beige">
-          <h2 className="font-heading italic text-2xl text-brand">Size Guide</h2>
+          <h2 className="font-heading text-2xl text-brand">Size Guide</h2>
           <button
             onClick={onClose}
             className="grid h-8 w-8 place-items-center rounded-full text-ink/50 hover:bg-beige/50 hover:text-brand transition-colors text-xl leading-none"
@@ -62,7 +62,7 @@ export function SizeGuideModal({ onClose }: SizeGuideModalProps) {
 
         <div className="px-6 py-5 space-y-7">
           {/* How to measure */}
-          <div className="rounded-xl bg-gold-light/20 border border-gold/20 px-4 py-3 text-sm text-ink/70">
+          <div className="rounded-lg bg-gold-light/20 border border-gold/20 px-4 py-3 text-sm text-ink/70">
             <p className="font-medium text-brand mb-1">How to measure</p>
             <p>Wrap a strip of paper or a thread around your finger / wrist. Mark where it meets, then measure the length with a ruler.</p>
           </div>
@@ -70,7 +70,7 @@ export function SizeGuideModal({ onClose }: SizeGuideModalProps) {
           {/* Ring sizes */}
           <div>
             <h3 className="text-sm font-semibold text-brand mb-3 uppercase tracking-wide">Ring Size Chart</h3>
-            <div className="overflow-hidden rounded-xl border border-beige text-sm">
+            <div className="overflow-hidden rounded-lg border border-beige text-sm">
               <table className="w-full">
                 <thead className="bg-beige/40 text-xs text-ink/60 uppercase">
                   <tr>
@@ -95,7 +95,7 @@ export function SizeGuideModal({ onClose }: SizeGuideModalProps) {
           {/* Bracelet sizes */}
           <div>
             <h3 className="text-sm font-semibold text-brand mb-3 uppercase tracking-wide">Bracelet / Bangle Size</h3>
-            <div className="overflow-hidden rounded-xl border border-beige text-sm">
+            <div className="overflow-hidden rounded-lg border border-beige text-sm">
               <table className="w-full">
                 <thead className="bg-beige/40 text-xs text-ink/60 uppercase">
                   <tr>
