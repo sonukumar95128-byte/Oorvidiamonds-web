@@ -10,7 +10,7 @@ export default function CollectionsIndexPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
-      <h1 className="font-heading text-3xl sm:text-4xl text-brand mb-8 text-center">All Collections</h1>
+      <h1 className="sr-only">All Collections</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {liveCollections.map((c) => (
