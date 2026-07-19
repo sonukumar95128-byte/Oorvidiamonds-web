@@ -12,7 +12,7 @@ export default function EditProductPage() {
   if (!product) {
     return (
       <div>
-        <h1 className="font-heading italic text-3xl text-brand mb-6">Product not found</h1>
+        <h1 className="font-heading text-3xl text-brand mb-6">Product not found</h1>
         <p className="text-sm text-ink/60">It may have been deleted.</p>
       </div>
     );
@@ -20,7 +20,7 @@ export default function EditProductPage() {
 
   return (
     <div>
-      <h1 className="font-heading italic text-3xl text-brand mb-6">Edit product</h1>
+      <h1 className="font-heading text-3xl text-brand mb-6">Edit product</h1>
       <ProductForm initial={product} />
     </div>
   );

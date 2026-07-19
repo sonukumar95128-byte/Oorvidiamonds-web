@@ -33,7 +33,7 @@ const socialLinks = [
   },
   {
     label: "WhatsApp",
-    href: "https://wa.me/",
+    href: `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NUMBER ?? ""}`,
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
         <path d="M7 17l-3 1 1-3a7.5 7.5 0 1 1 2 2z" strokeLinecap="round" strokeLinejoin="round" />
@@ -122,6 +122,10 @@ export function Footer() {
             <p>WhatsApp: +91 70574 18065 · © {new Date().getFullYear()} Oorvi Diamonds</p>
           </div>
         </div>
+
+        <p className="text-center text-xs font-light text-gold-light/35 pt-5">
+          Developed by Diiamond Guru Professiional Service
+        </p>
       </div>
     </footer>
   );

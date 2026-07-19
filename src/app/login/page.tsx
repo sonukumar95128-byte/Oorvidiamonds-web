@@ -41,7 +41,7 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-beige p-8">
-          <h1 className="font-heading italic text-2xl text-brand mb-1">Welcome back</h1>
+          <h1 className="font-heading text-2xl text-brand mb-1">Welcome back</h1>
           <p className="text-sm text-ink/50 mb-6">Sign in to your account</p>
 
           {error && (
@@ -66,7 +66,7 @@ export default function LoginPage() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-medium text-ink/60">Password</label>
-                <Link href="/forgot-password" className="text-xs text-gold hover:text-brand transition-colors">
+                <Link href="/help/contact" className="text-xs text-gold hover:text-brand transition-colors">
                   Forgot password?
                 </Link>
               </div>

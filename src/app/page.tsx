@@ -32,7 +32,6 @@ const defaultSections: HomepageSection[] = [
   { id: "hero", label: "Hero slider", meta: "", manageLabel: "", enabled: true },
   { id: "categories", label: "Category circles", meta: "", manageLabel: "", enabled: true },
   { id: "best-sellers", label: "Best Sellers", meta: "", manageLabel: "", enabled: true },
-  { id: "offer-banner", label: "Offer banner", meta: "", manageLabel: "", enabled: true },
   { id: "new-arrivals", label: "New Arrivals", meta: "", manageLabel: "", enabled: true },
   { id: "reels", label: "Video Reels", meta: "", manageLabel: "", enabled: true },
   { id: "collections", label: "Collections", meta: "", manageLabel: "", enabled: true },
@@ -116,7 +115,7 @@ export default async function Home() {
   // Derived
   const liveHeroSlides = heroSlidesAdmin
     .filter((s) => s.enabled)
-    .map((s) => ({ image: s.image, href: s.link, alt: s.title }));
+    .map((s) => ({ image: s.image, mobileImage: s.mobileImage, href: s.link, alt: s.title }));
 
   const liveCollections = collections.filter((c) => c.enabled);
   const [heroCollection, ...restCollections] = liveCollections;

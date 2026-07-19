@@ -65,7 +65,7 @@ export function ProductPicker({ title, description, initialSelected, onSave, bac
   return (
     <div>
       <div className="flex items-start justify-between mb-1">
-        <h1 className="font-heading italic text-3xl text-brand">{title}</h1>
+        <h1 className="font-heading text-3xl text-brand">{title}</h1>
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push(backHref)}

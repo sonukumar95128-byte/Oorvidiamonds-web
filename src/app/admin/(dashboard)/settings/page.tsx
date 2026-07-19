@@ -130,20 +130,6 @@ export default function AdminSettingsPage() {
           <p className="mt-2 text-xs text-ink/40">Shown in the dark strip at the very top of every page.</p>
         </div>
 
-        {/* UPI Payment */}
-        <div className="rounded-xl border border-beige bg-white p-5">
-          <h2 className="text-sm font-medium text-brand mb-4">UPI Payment</h2>
-          <label className="block text-xs text-ink/50 mb-1">Your UPI ID</label>
-          <input
-            type="text"
-            value={settings.upiId}
-            onChange={(e) => updateSettings({ upiId: e.target.value })}
-            placeholder="e.g. yourname@upi or 9876543210@paytm"
-            className="w-full rounded-lg border border-beige px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
-          />
-          <p className="mt-2 text-xs text-ink/40">Customers will see a QR code + UPI link at checkout to pay directly to you.</p>
-        </div>
-
         {/* Shipping */}
         <div className="rounded-xl border border-beige bg-white p-5">
           <h2 className="text-sm font-medium text-brand mb-4">Shipping</h2>
@@ -160,41 +146,9 @@ export default function AdminSettingsPage() {
           <p className="mt-2 text-xs text-ink/40">Orders above this amount ship free; below it, a flat fee applies.</p>
         </div>
 
-        {/* Payments & tax */}
+        {/* Tax */}
         <div className="rounded-xl border border-beige bg-white p-5">
-          <h2 className="text-sm font-medium text-brand mb-4">Payments &amp; tax</h2>
-          <div className="space-y-2 mb-4">
-            {(
-              [
-                ["upi", "UPI"],
-                ["card", "Credit / Debit card"],
-                ["netbanking", "Net banking"],
-                ["cod", "Cash on delivery"],
-              ] as const
-            ).map(([key, label]) => (
-              <div key={key} className="flex items-center justify-between">
-                <span className="text-sm text-ink/70">{label}</span>
-                <button
-                  onClick={() =>
-                    updateSettings({
-                      paymentMethods: { ...settings.paymentMethods, [key]: !settings.paymentMethods[key] },
-                    })
-                  }
-                  className={
-                    "relative h-5 w-9 rounded-full transition-colors " +
-                    (settings.paymentMethods[key] ? "bg-gold" : "bg-beige")
-                  }
-                >
-                  <span
-                    className={
-                      "absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform " +
-                      (settings.paymentMethods[key] ? "translate-x-4" : "translate-x-0.5")
-                    }
-                  />
-                </button>
-              </div>
-            ))}
-          </div>
+          <h2 className="text-sm font-medium text-brand mb-4">Tax</h2>
           <label className="block text-xs text-ink/50 mb-1">GST on gold</label>
           <div className="flex items-center gap-2">
             <input

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-type Slide = { image: string; href: string; alt: string };
+type Slide = { image: string; mobileImage?: string; href: string; alt: string };
 
 export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -55,7 +55,14 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
             href={slide.href}
             className="relative shrink-0 w-[84%] h-[340px] sm:h-[440px] lg:h-[560px] rounded-[20px] overflow-hidden bg-brand snap-center"
           >
-            <Image src={slide.image} alt={slide.alt} fill priority={i === 0} sizes="84vw" className="object-cover" />
+            {slide.mobileImage ? (
+              <>
+                <Image src={slide.mobileImage} alt={slide.alt} fill priority={i === 0} sizes="84vw" className="object-cover sm:hidden" />
+                <Image src={slide.image} alt={slide.alt} fill priority={i === 0} sizes="84vw" className="hidden object-cover sm:block" />
+              </>
+            ) : (
+              <Image src={slide.image} alt={slide.alt} fill priority={i === 0} sizes="84vw" className="object-cover" />
+            )}
           </Link>
         ))}
       </div>

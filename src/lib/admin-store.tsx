@@ -31,6 +31,7 @@ export type HeroSlideAdmin = {
   title: string;
   link: string;
   image: string;
+  mobileImage?: string;
   enabled: boolean;
 };
 

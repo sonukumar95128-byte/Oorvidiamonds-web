@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { categoryToSlug, dummyProducts, formatRupee, priceToNumber } from "@/lib/dummy-images";
 import { useCart } from "@/lib/cart-store";
 
@@ -11,12 +11,30 @@ const VALID_COUPONS: Record<string, number> = {
   DAZZLING20: 0.05,
 };
 
+const SAVED_FOR_LATER_KEY = "lakshiraah-saved-for-later";
+
 export default function CartPage() {
   const { items: cart, addItem, removeItem: removeFromCart, updateQuantity } = useCart();
   const [savedForLater, setSavedForLater] = useState<string[]>([]);
+  const [hydrated, setHydrated] = useState(false);
   const [couponInput, setCouponInput] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponError, setCouponError] = useState("");
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SAVED_FOR_LATER_KEY);
+      if (raw) setSavedForLater(JSON.parse(raw));
+    } catch {
+      // ignore malformed storage
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(SAVED_FOR_LATER_KEY, JSON.stringify(savedForLater));
+  }, [savedForLater, hydrated]);
 
   const items = cart
     .map((line) => {
@@ -63,11 +81,11 @@ export default function CartPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8">
       <div className="flex items-baseline justify-between mb-6">
-        <h1 className="font-heading italic text-3xl text-brand">Your Bag</h1>
+        <h1 className="font-heading text-3xl text-brand">Your Bag</h1>
         <span className="text-sm text-ink/50">({items.length} items)</span>
       </div>
 
-      {items.length === 0 ? (
+      {items.length === 0 && savedForLater.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-ink/60 mb-4">Your bag is empty.</p>
           <Link href="/jewellery" className="rounded-full bg-brand px-6 py-3 text-sm font-medium text-gold-light hover:bg-brand-secondary transition-colors">
@@ -78,6 +96,14 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Items */}
           <div className="lg:col-span-2 space-y-5">
+            {items.length === 0 && (
+              <div className="text-center py-10">
+                <p className="text-ink/60 mb-4">Your bag is empty.</p>
+                <Link href="/jewellery" className="rounded-full bg-brand px-6 py-3 text-sm font-medium text-gold-light hover:bg-brand-secondary transition-colors">
+                  Continue shopping
+                </Link>
+              </div>
+            )}
             {items.map((item) => (
               <div key={item.slug} className="flex gap-4 border-b border-beige pb-5">
                 <Link
@@ -130,26 +156,30 @@ export default function CartPage() {
               </div>
             ))}
 
-            {/* Coupon */}
-            <div className="flex items-center gap-2 rounded-full border border-dashed border-beige pl-4 pr-1.5 py-1.5">
-              <input
-                value={couponInput}
-                onChange={(e) => setCouponInput(e.target.value)}
-                placeholder="Coupon code"
-                className="flex-1 bg-transparent text-sm placeholder:text-ink/40 focus:outline-none"
-              />
-              <button
-                onClick={applyCoupon}
-                className="rounded-full bg-gold px-4 py-1.5 text-xs font-medium text-brand hover:bg-gold-light transition-colors"
-              >
-                Apply
-              </button>
-            </div>
-            {couponError && <p className="text-xs text-red-500">{couponError}</p>}
-            {appliedCoupon && (
-              <p className="text-xs text-gold">
-                Coupon {appliedCoupon} applied — you saved {formatRupee(discount)}
-              </p>
+            {items.length > 0 && (
+              <>
+                {/* Coupon */}
+                <div className="flex items-center gap-2 rounded-full border border-dashed border-beige pl-4 pr-1.5 py-1.5">
+                  <input
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value)}
+                    placeholder="Coupon code"
+                    className="flex-1 bg-transparent text-sm placeholder:text-ink/40 focus:outline-none"
+                  />
+                  <button
+                    onClick={applyCoupon}
+                    className="rounded-full bg-gold px-4 py-1.5 text-xs font-medium text-brand hover:bg-gold-light transition-colors"
+                  >
+                    Apply
+                  </button>
+                </div>
+                {couponError && <p className="text-xs text-red-500">{couponError}</p>}
+                {appliedCoupon && (
+                  <p className="text-xs text-gold">
+                    Coupon {appliedCoupon} applied — you saved {formatRupee(discount)}
+                  </p>
+                )}
+              </>
             )}
 
             {savedForLater.length > 0 && (
@@ -181,36 +211,38 @@ export default function CartPage() {
           </div>
 
           {/* Order summary */}
-          <div className="rounded-xl border border-beige p-5 h-fit sticky top-24">
-            <h2 className="font-heading text-xl text-brand mb-4">Order Summary</h2>
-            <dl className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-ink/60">Subtotal</dt>
-                <dd className="text-ink/80">{formatRupee(subtotal)}</dd>
-              </div>
-              {appliedCoupon && (
-                <div className="flex justify-between text-gold">
-                  <dt>Discount ({appliedCoupon})</dt>
-                  <dd>− {formatRupee(discount)}</dd>
+          {items.length > 0 && (
+            <div className="rounded-xl border border-beige p-5 h-fit sticky top-24">
+              <h2 className="font-heading text-xl text-brand mb-4">Order Summary</h2>
+              <dl className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <dt className="text-ink/60">Subtotal</dt>
+                  <dd className="text-ink/80">{formatRupee(subtotal)}</dd>
                 </div>
-              )}
-              <div className="flex justify-between">
-                <dt className="text-ink/60">Shipping</dt>
-                <dd className="text-ink/80">{shipping === 0 ? "Free" : formatRupee(shipping)}</dd>
+                {appliedCoupon && (
+                  <div className="flex justify-between text-gold">
+                    <dt>Discount ({appliedCoupon})</dt>
+                    <dd>− {formatRupee(discount)}</dd>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <dt className="text-ink/60">Shipping</dt>
+                  <dd className="text-ink/80">{shipping === 0 ? "Free" : formatRupee(shipping)}</dd>
+                </div>
+              </dl>
+              <div className="border-t border-beige mt-3 pt-3 flex justify-between">
+                <span className="font-medium text-brand">Total</span>
+                <span className="font-semibold text-brand text-lg">{formatRupee(total)}</span>
               </div>
-            </dl>
-            <div className="border-t border-beige mt-3 pt-3 flex justify-between">
-              <span className="font-medium text-brand">Total</span>
-              <span className="font-semibold text-brand text-lg">{formatRupee(total)}</span>
-            </div>
 
-            <Link
-              href="/checkout"
-              className="mt-5 block text-center rounded-full bg-brand px-6 py-3 text-sm font-medium text-gold-light hover:bg-brand-secondary transition-colors"
-            >
-              Proceed to checkout
-            </Link>
-          </div>
+              <Link
+                href="/checkout"
+                className="mt-5 block text-center rounded-full bg-brand px-6 py-3 text-sm font-medium text-gold-light hover:bg-brand-secondary transition-colors"
+              >
+                Proceed to checkout
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>

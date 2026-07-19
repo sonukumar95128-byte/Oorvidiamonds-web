@@ -180,7 +180,7 @@ export default function CheckoutPage() {
     return (
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-20 text-center">
         <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-gold-light/30 text-3xl text-gold">✓</div>
-        <h1 className="font-heading italic text-3xl text-brand mb-2">Order placed!</h1>
+        <h1 className="font-heading text-3xl text-brand mb-2">Order placed!</h1>
         <p className="text-ink/60 text-sm mb-1">Thank you, {address.fullName}!</p>
         <p className="text-ink/60 text-sm">Our team will confirm your order and delivery within 24 hours.</p>
         {orderId && <p className="mt-3 text-xs text-ink/40">Order ID: {orderId}</p>}
@@ -205,7 +205,7 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="font-heading italic text-3xl text-brand">Checkout</h1>
+        <h1 className="font-heading text-3xl text-brand">Checkout</h1>
         <span className="flex items-center gap-1.5 text-xs text-ink/50">🔒 Secure checkout</span>
       </div>
 

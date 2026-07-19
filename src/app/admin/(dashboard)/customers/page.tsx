@@ -1,38 +1,45 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
-import { useAdmin } from "@/lib/admin-store";
+import { useEffect, useMemo, useState } from "react";
 import { formatRupee } from "@/lib/dummy-images";
+import type { GuestOrder } from "@/app/api/orders/route";
 
 export default function AdminCustomersPage() {
-  const { orders } = useAdmin();
+  const [orders, setOrders] = useState<GuestOrder[]>([]);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetch("/api/orders")
+      .then((r) => r.json())
+      .then((data) => setOrders(Array.isArray(data) ? data : []))
+      .catch(() => setOrders([]));
+  }, []);
 
   const customers = useMemo(() => {
     const map = new Map<
       string,
-      { name: string; phone: string; orderCount: number; totalSpentInPaise: number; lastOrderDate: string }
+      { name: string; phone: string; orderCount: number; totalSpent: number; lastOrderDate: string }
     >();
 
     for (const o of orders) {
-      const key = o.customerPhone;
+      const key = o.phone;
       const existing = map.get(key);
       if (existing) {
         existing.orderCount += 1;
-        existing.totalSpentInPaise += o.totalInPaise;
+        existing.totalSpent += o.total;
         if (o.createdAt > existing.lastOrderDate) existing.lastOrderDate = o.createdAt;
       } else {
         map.set(key, {
           name: o.customerName,
-          phone: o.customerPhone,
+          phone: o.phone,
           orderCount: 1,
-          totalSpentInPaise: o.totalInPaise,
+          totalSpent: o.total,
           lastOrderDate: o.createdAt,
         });
       }
     }
 
-    return Array.from(map.values()).sort((a, b) => b.totalSpentInPaise - a.totalSpentInPaise);
+    return Array.from(map.values()).sort((a, b) => b.totalSpent - a.totalSpent);
   }, [orders]);
 
   const filtered = customers.filter(
@@ -66,8 +73,8 @@ export default function AdminCustomersPage() {
                 <td className="px-4 py-2 text-ink">{c.name}</td>
                 <td className="px-4 py-2 text-ink/70">{c.phone}</td>
                 <td className="px-4 py-2 text-ink/70">{c.orderCount}</td>
-                <td className="px-4 py-2 font-medium text-brand">{formatRupee(Math.round(c.totalSpentInPaise / 100))}</td>
-                <td className="px-4 py-2 text-ink/60">{c.lastOrderDate}</td>
+                <td className="px-4 py-2 font-medium text-brand">{formatRupee(c.totalSpent)}</td>
+                <td className="px-4 py-2 text-ink/60">{new Date(c.lastOrderDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</td>
               </tr>
             ))}
             {filtered.length === 0 && (

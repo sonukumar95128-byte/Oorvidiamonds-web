@@ -29,16 +29,26 @@ export default function AdminBannersPage() {
           + Add banner
         </button>
       </div>
-      <p className="text-sm text-ink/50 mb-6">Hero slides shown on the homepage slider</p>
+      <p className="text-sm text-ink/50 mb-6">Hero slides shown on the homepage slider · set separate images for desktop and mobile</p>
 
       <div className="rounded-xl border border-beige bg-white overflow-hidden divide-y divide-beige mb-10">
         {heroSlidesAdmin.map((slide, i) => (
           <div key={slide.id} className="flex items-center gap-4 px-4 py-3">
-            <div className="shrink-0">
-              <div className="relative h-14 w-20 rounded-lg overflow-hidden bg-beige border border-beige mb-1">
-                <Image src={slide.image} alt={slide.title} fill sizes="80px" className="object-cover" />
+            <div className="flex gap-3 shrink-0">
+              <div className="shrink-0">
+                <div className="relative h-14 w-20 rounded-lg overflow-hidden bg-beige border border-beige mb-1">
+                  <Image src={slide.image} alt={slide.title} fill sizes="80px" className="object-cover" />
+                </div>
+                <p className="text-[10px] text-ink/40 mb-0.5">Desktop</p>
+                <BannerImagePicker value={slide.image} onChange={(image) => updateHeroSlide(slide.id, { image })} recommended="1920 × 700 px · full-width hero banner" />
               </div>
-              <BannerImagePicker value={slide.image} onChange={(image) => updateHeroSlide(slide.id, { image })} recommended="1920 × 700 px · full-width hero banner" />
+              <div className="shrink-0">
+                <div className="relative h-14 w-11 rounded-lg overflow-hidden bg-beige border border-beige mb-1">
+                  <Image src={slide.mobileImage || slide.image} alt={`${slide.title} (mobile)`} fill sizes="45px" className="object-cover" />
+                </div>
+                <p className="text-[10px] text-ink/40 mb-0.5">Mobile</p>
+                <BannerImagePicker value={slide.mobileImage ?? ""} onChange={(mobileImage) => updateHeroSlide(slide.id, { mobileImage })} recommended="800 × 1000 px · portrait, for phones" />
+              </div>
             </div>
 
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">

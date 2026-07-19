@@ -8,7 +8,7 @@ export default async function AdminLoginPage({
   return (
     <div className="min-h-screen grid place-items-center bg-ivory px-4">
       <div className="w-full max-w-sm rounded-xl border border-beige bg-white p-6">
-        <h1 className="font-heading italic text-2xl text-brand mb-1">Admin access</h1>
+        <h1 className="font-heading text-2xl text-brand mb-1">Admin access</h1>
         <p className="text-sm text-ink/50 mb-5">Enter the admin password to continue.</p>
 
         {error && (

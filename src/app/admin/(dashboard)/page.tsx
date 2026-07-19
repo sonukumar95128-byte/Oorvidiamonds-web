@@ -1,23 +1,33 @@
 ﻿"use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAdmin } from "@/lib/admin-store";
 import { formatRupee } from "@/lib/dummy-images";
+import type { GuestOrder } from "@/app/api/orders/route";
 
 export default function AdminDashboardPage() {
-  const { products, orders } = useAdmin();
+  const { products } = useAdmin();
+  const [orders, setOrders] = useState<GuestOrder[]>([]);
+
+  useEffect(() => {
+    fetch("/api/orders")
+      .then((r) => r.json())
+      .then((data) => setOrders(Array.isArray(data) ? data : []))
+      .catch(() => setOrders([]));
+  }, []);
 
   const lowStock = products.filter((p) => p.stock <= 5);
   const totalRevenue = orders
-    .filter((o) => o.status !== "Cancelled")
-    .reduce((sum, o) => sum + o.totalInPaise, 0);
-  const pendingOrders = orders.filter((o) => o.status === "Pending" || o.status === "Paid").length;
+    .filter((o) => o.status !== "cancelled")
+    .reduce((sum, o) => sum + o.total, 0);
+  const pendingOrders = orders.filter((o) => o.status === "pending_payment").length;
 
   const stats = [
     { label: "Products", value: products.length, href: "/admin/products" },
     { label: "Orders", value: orders.length, href: "/admin/orders" },
     { label: "Pending fulfillment", value: pendingOrders, href: "/admin/orders" },
-    { label: "Revenue (demo)", value: formatRupee(Math.round(totalRevenue / 100)), href: "/admin/orders" },
+    { label: "Revenue", value: formatRupee(totalRevenue), href: "/admin/orders" },
   ];
 
   return (
@@ -69,12 +79,14 @@ export default function AdminDashboardPage() {
                 <tr key={o.id} className="border-t border-beige">
                   <td className="px-4 py-2">
                     <Link href="/admin/orders" className="text-gold hover:text-brand">
-                      #{o.id}
+                      {o.id}
                     </Link>
                   </td>
                   <td className="px-4 py-2">{o.customerName}</td>
-                  <td className="px-4 py-2">{o.status}</td>
-                  <td className="px-4 py-2 text-right">{formatRupee(Math.round(o.totalInPaise / 100))}</td>
+                  <td className="px-4 py-2">
+                    {o.status === "pending_payment" ? "Pending payment" : o.status === "paid" ? "Paid ✓" : "Cancelled"}
+                  </td>
+                  <td className="px-4 py-2 text-right">{formatRupee(o.total)}</td>
                 </tr>
               ))}
               {orders.length === 0 && (

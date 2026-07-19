@@ -82,7 +82,7 @@ export default async function ProductDetailPage({
               <p className="text-xs tracking-[4px] uppercase text-gold">{category} Collection</p>
               <ProductShareButton name={product.name} />
             </div>
-            <h1 className="font-heading text-3xl sm:text-[42px] leading-[1.15] text-brand mb-2">{product.name}</h1>
+            <h1 className="sr-only">{product.name}</h1>
             <ProductPurchasePanel
               slug={product.slug}
               sku={product.sku ?? product.slug.toUpperCase().replace(/-/g, "").slice(0, 12)}

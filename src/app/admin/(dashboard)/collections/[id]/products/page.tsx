@@ -12,7 +12,7 @@ export default function CollectionProductsPickerPage() {
   if (!collection) {
     return (
       <div>
-        <h1 className="font-heading italic text-3xl text-brand mb-3">Collection not found</h1>
+        <h1 className="font-heading text-3xl text-brand mb-3">Collection not found</h1>
         <p className="text-sm text-ink/60">It may have been deleted.</p>
       </div>
     );

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { FilterSidebar } from "@/components/FilterSidebar";
 import { InfiniteProductGrid } from "@/components/InfiniteProductGrid";
@@ -36,18 +35,12 @@ export function CategoryListing({ title, products, activeCategories }: CategoryL
 
   return (
     <div className="mx-auto max-w-[1460px] px-4 sm:px-6 lg:px-10 pt-8 pb-20">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2.5 text-[13.5px] text-ink/50 mb-5">
-        <Link href="/" className="hover:text-brand transition-colors">Home</Link>
-        <span>/</span>
-        <span className="text-brand">{title}</span>
-      </div>
+      <h1 className="sr-only">{title}</h1>
 
-      {/* Title + count + sort */}
+      {/* count + sort */}
       <div className="flex flex-wrap items-end justify-between gap-5 mb-7">
         <div>
-          <h1 className="font-heading text-4xl sm:text-[44px] text-brand">{title}</h1>
-          <p className="text-sm text-ink/50 mt-2">{sortedProducts.length} designs</p>
+          <p className="text-sm text-ink/50">{sortedProducts.length} designs</p>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs tracking-[1px] uppercase text-ink/50 shrink-0">Sort by</span>

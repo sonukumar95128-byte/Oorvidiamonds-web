@@ -12,14 +12,14 @@ export default function AccountOverviewPage() {
 
   const stats = [
     { label: "Orders", value: orders.length, href: "/account/orders", icon: "📦" },
-    { label: "Wishlist", value: wishlistSlugs.length, href: "/account/wishlist", icon: "♡" },
+    { label: "Wishlist", value: wishlistSlugs.length, href: "/wishlist", icon: "♡" },
     { label: "In Bag", value: cartItems.length, href: "/cart", icon: "🛍" },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading italic text-3xl text-brand">Hello, {user?.name.split(" ")[0]} 👋</h1>
+        <h1 className="font-heading text-3xl text-brand">Hello, {user?.name.split(" ")[0]} 👋</h1>
         <p className="text-sm text-ink/50 mt-1">Member since {user?.createdAt}</p>
       </div>
 

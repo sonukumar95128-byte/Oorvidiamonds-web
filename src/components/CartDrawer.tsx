@@ -24,7 +24,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
       <div onClick={onClose} className="fixed inset-0 z-[99] bg-brand/50 animate-fadeIn" />
       <div className="fixed top-0 right-0 bottom-0 z-[100] w-full sm:w-[420px] bg-ivory shadow-2xl flex flex-col animate-fadeUp" style={{ animationDuration: "0.35s" }}>
         <div className="flex items-center justify-between px-7 py-6 border-b border-beige shrink-0">
-          <h2 className="font-heading italic text-2xl text-brand">Your Cart</h2>
+          <h2 className="font-heading text-2xl text-brand">Your Cart</h2>
           <button onClick={onClose} aria-label="Close cart" className="text-2xl leading-none text-brand hover:text-gold">
             ×
           </button>

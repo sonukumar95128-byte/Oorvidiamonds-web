@@ -18,7 +18,7 @@ export default function OrdersPage() {
   if (orders.length === 0) {
     return (
       <div className="space-y-4">
-        <h1 className="font-heading italic text-3xl text-brand">My Orders</h1>
+        <h1 className="font-heading text-3xl text-brand">My Orders</h1>
         <div className="bg-white rounded-2xl border border-beige p-12 text-center">
           <p className="text-4xl mb-3">📦</p>
           <p className="text-sm font-medium text-brand mb-1">No orders yet</p>
@@ -36,7 +36,7 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-heading italic text-3xl text-brand">My Orders</h1>
+      <h1 className="font-heading text-3xl text-brand">My Orders</h1>
 
       {orders.map((order) => (
         <div key={order.id} className="bg-white rounded-2xl border border-beige overflow-hidden">

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
 import { useUser } from "@/lib/user-store";
@@ -70,6 +70,14 @@ export function Header() {
   const [search, setSearch] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,12 +86,20 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-ivory border-b border-beige">
+      <header
+        className={
+          "sticky top-0 z-40 border-b transition-colors duration-300 " +
+          (scrolled ? "bg-brand border-brand-secondary" : "bg-ivory border-beige")
+        }
+      >
         <div className="mx-auto max-w-[1560px] flex items-center gap-6 sm:gap-8 px-4 sm:px-6 lg:px-10 py-[10px]">
           <button
             onClick={() => setMenuOpen(true)}
             aria-label="Open menu"
-            className="lg:hidden shrink-0 text-brand hover:text-gold transition-colors"
+            className={
+              "lg:hidden shrink-0 transition-colors " +
+              (scrolled ? "text-gold-light hover:text-gold" : "text-brand hover:text-gold")
+            }
           >
             <MenuIcon />
           </button>
@@ -92,15 +108,33 @@ export function Header() {
             <Image src="/brand/oorvi-logo.png" alt="Oorvi Diamonds" width={160} height={52} className="h-[52px] w-auto object-contain block" priority />
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-7 text-[14.5px] text-ink/85 shrink-0">
+          <nav
+            className={
+              "hidden lg:flex items-center gap-7 text-[14.5px] shrink-0 transition-colors " +
+              (scrolled ? "text-ivory/85" : "text-ink/85")
+            }
+          >
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="whitespace-nowrap py-2 hover:text-brand transition-colors">
+              <Link
+                key={link.href}
+                href={link.href}
+                className={
+                  "whitespace-nowrap py-2 transition-colors " +
+                  (scrolled ? "hover:text-gold-light" : "hover:text-brand")
+                }
+              >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <form onSubmit={handleSearchSubmit} className="hidden sm:flex flex-1 min-w-[180px] items-center gap-3 rounded-full border border-beige bg-white px-5 py-[9px] text-ink/50">
+          <form
+            onSubmit={handleSearchSubmit}
+            className={
+              "hidden sm:flex flex-1 min-w-[180px] items-center gap-3 rounded-full border bg-white px-5 py-[9px] text-ink/50 transition-colors " +
+              (scrolled ? "border-transparent" : "border-beige")
+            }
+          >
             <SearchIcon />
             <input
               type="search"
@@ -112,25 +146,47 @@ export function Header() {
           </form>
 
           <div className="flex items-center gap-6 shrink-0 ml-auto sm:ml-0">
-            <Link href="/account/wishlist" aria-label="Wishlist" className="relative text-brand hover:text-gold transition-colors">
+            <Link
+              href="/wishlist"
+              aria-label="Wishlist"
+              className={"relative transition-colors " + (scrolled ? "text-gold-light hover:text-gold" : "text-brand hover:text-gold")}
+            >
               <HeartIcon />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 grid h-4 w-4 place-items-center rounded-full bg-brand text-[10px] text-gold-light">
+                <span
+                  className={
+                    "absolute -top-1.5 -right-2 grid h-4 w-4 place-items-center rounded-full text-[10px] transition-colors " +
+                    (scrolled ? "bg-gold-light text-brand" : "bg-brand text-gold-light")
+                  }
+                >
                   {wishlistCount > 9 ? "9+" : wishlistCount}
                 </span>
               )}
             </Link>
-            <Link href={isLoggedIn ? "/account" : "/login"} aria-label="Account" className="text-brand hover:text-gold transition-colors">
+            <Link
+              href={isLoggedIn ? "/account" : "/login"}
+              aria-label="Account"
+              className={"transition-colors " + (scrolled ? "text-gold-light hover:text-gold" : "text-brand hover:text-gold")}
+            >
               {isLoggedIn && user ? (
-                <span className="font-heading italic text-base font-semibold">{user.name.charAt(0).toUpperCase()}</span>
+                <span className="font-heading text-base font-semibold">{user.name.charAt(0).toUpperCase()}</span>
               ) : (
                 <UserIcon />
               )}
             </Link>
-            <button onClick={() => setCartOpen(true)} aria-label="Cart" className="relative text-brand hover:text-gold transition-colors">
+            <button
+              onClick={() => setCartOpen(true)}
+              aria-label="Cart"
+              className={"relative transition-colors " + (scrolled ? "text-gold-light hover:text-gold" : "text-brand hover:text-gold")}
+            >
               <BagIcon />
               {itemCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 grid h-4 w-4 place-items-center rounded-full bg-brand text-[10px] text-gold-light">
+                <span
+                  className={
+                    "absolute -top-1.5 -right-2 grid h-4 w-4 place-items-center rounded-full text-[10px] transition-colors " +
+                    (scrolled ? "bg-gold-light text-brand" : "bg-brand text-gold-light")
+                  }
+                >
                   {itemCount > 9 ? "9+" : itemCount}
                 </span>
               )}

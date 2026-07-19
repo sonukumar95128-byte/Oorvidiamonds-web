@@ -17,9 +17,13 @@ const SECTION_HREFS: Record<string, string> = {
 };
 
 export default function HomepageBuilderPage() {
-  const { homepageSections, toggleHomepageSection, reorderHomepageSections, newArrivalsSlugs, bestSellersSlugs } =
+  const { homepageSections: allSections, toggleHomepageSection, reorderHomepageSections, newArrivalsSlugs, bestSellersSlugs } =
     useAdmin();
   const [saved, setSaved] = useState(false);
+
+  // "offer-banner" is a legacy section id with no corresponding homepage implementation — hide it
+  // regardless of what's persisted in existing SiteConfig rows.
+  const homepageSections = allSections.filter((s) => s.id !== "offer-banner");
 
   const metaFor = (section: HomepageSection) => {
     if (section.id === "new-arrivals") return `${newArrivalsSlugs.length} products shown`;

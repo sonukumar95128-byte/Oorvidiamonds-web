@@ -42,7 +42,7 @@ export default function AddressesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading italic text-3xl text-brand">Addresses</h1>
+        <h1 className="font-heading text-3xl text-brand">Addresses</h1>
         {!showForm && (
           <button
             onClick={openAdd}

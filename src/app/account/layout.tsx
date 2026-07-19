@@ -10,19 +10,19 @@ const navItems = [
   { href: "/account/profile", label: "Profile", icon: "✎" },
   { href: "/account/orders", label: "My Orders", icon: "📦" },
   { href: "/account/addresses", label: "Addresses", icon: "📍" },
-  { href: "/account/wishlist", label: "Wishlist", icon: "♡" },
+  { href: "/wishlist", label: "Wishlist", icon: "♡" },
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn, user, logout } = useUser();
+  const { isLoggedIn, loading, user, logout } = useUser();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isLoggedIn) router.replace("/login");
-  }, [isLoggedIn, router]);
+    if (!loading && !isLoggedIn) router.replace("/login");
+  }, [loading, isLoggedIn, router]);
 
-  if (!isLoggedIn) return null;
+  if (loading || !isLoggedIn) return null;
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
@@ -32,7 +32,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           {/* User card */}
           <div className="bg-white rounded-2xl border border-beige p-5 mb-4">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-brand/10 grid place-items-center text-brand font-heading italic text-xl shrink-0">
+              <div className="h-12 w-12 rounded-full bg-brand/10 grid place-items-center text-brand font-heading text-xl shrink-0">
                 {user?.name.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0">

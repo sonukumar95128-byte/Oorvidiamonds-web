@@ -10,18 +10,18 @@ export default function CollectionsIndexPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
-      <h1 className="font-heading italic text-3xl text-brand mb-8 text-center">All collections</h1>
+      <h1 className="font-heading text-3xl sm:text-4xl text-brand mb-8 text-center">All Collections</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {liveCollections.map((c) => (
           <Link
             key={c.id}
             href={`/collections/${c.slug}`}
-            className="relative aspect-[4/3] rounded-lg overflow-hidden flex items-end p-4"
+            className="relative aspect-[4/3] overflow-hidden flex items-end p-4 group"
           >
-            <Image src={c.image} alt={c.title} fill sizes="33vw" className="object-cover" />
+            <Image src={c.image} alt={c.title} fill sizes="33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-brand/70 to-transparent" />
-            <span className="relative z-10 font-heading italic text-xl text-white">{c.title}</span>
+            <span className="relative z-10 font-heading text-xl text-white">{c.title}</span>
           </Link>
         ))}
         {liveCollections.length === 0 && (

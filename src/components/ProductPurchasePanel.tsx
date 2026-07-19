@@ -60,9 +60,21 @@ export function ProductPurchasePanel({
   const sizeLabel = category === "Rings" ? "Ring Size" : category === "Bracelets" ? "Bracelet Size" : "Length";
   const [size, setSize] = useState(sizeOptions[0]);
   const [pincode, setPincode] = useState("");
+  const [deliveryMessage, setDeliveryMessage] = useState<{ text: string; error: boolean } | null>(null);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [openAcc, setOpenAcc] = useState(0);
+
+  const checkDelivery = () => {
+    if (!/^\d{6}$/.test(pincode)) {
+      setDeliveryMessage({ text: "Enter a valid 6-digit pincode.", error: true });
+      return;
+    }
+    const eta = new Date();
+    eta.setDate(eta.getDate() + 5);
+    const formatted = eta.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+    setDeliveryMessage({ text: `Delivers by ${formatted}, free & insured.`, error: false });
+  };
 
   const discount = discountPercent(price, originalPrice);
   const breakup = getPriceBreakup(price);
@@ -288,21 +300,32 @@ export function ProductPurchasePanel({
       )}
 
       {/* Delivery */}
-      <div className="flex items-center gap-3 rounded-lg border border-beige bg-white px-[18px] py-3.5 mb-7">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A8752E" strokeWidth="1.6" className="shrink-0">
-          <path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 0 1 18 0z" />
-          <circle cx="12" cy="10" r="3" />
-        </svg>
-        <input
-          value={pincode}
-          onChange={(e) => setPincode(e.target.value)}
-          placeholder="Enter pincode to check delivery date"
-          maxLength={6}
-          className="flex-1 bg-transparent text-sm placeholder:text-ink/40 focus:outline-none"
-        />
-        <button className="text-[13px] tracking-[2px] uppercase text-gold hover:text-brand transition-colors">
-          Check
-        </button>
+      <div className="mb-7">
+        <div className="flex items-center gap-3 rounded-lg border border-beige bg-white px-[18px] py-3.5">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A8752E" strokeWidth="1.6" className="shrink-0">
+            <path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <input
+            value={pincode}
+            onChange={(e) => {
+              setPincode(e.target.value.replace(/\D/g, ""));
+              setDeliveryMessage(null);
+            }}
+            onKeyDown={(e) => e.key === "Enter" && checkDelivery()}
+            placeholder="Enter pincode to check delivery date"
+            maxLength={6}
+            className="flex-1 bg-transparent text-sm placeholder:text-ink/40 focus:outline-none"
+          />
+          <button onClick={checkDelivery} className="text-[13px] tracking-[2px] uppercase text-gold hover:text-brand transition-colors">
+            Check
+          </button>
+        </div>
+        {deliveryMessage && (
+          <p className={"mt-2 text-[13px] px-1 " + (deliveryMessage.error ? "text-red-500" : "text-[#1F7A45]")}>
+            {deliveryMessage.text}
+          </p>
+        )}
       </div>
 
       {/* Accordions */}

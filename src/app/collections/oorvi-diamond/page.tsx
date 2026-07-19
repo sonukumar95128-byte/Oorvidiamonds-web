@@ -60,7 +60,7 @@ export default function OorviDiamondPage() {
             The Diamond Edit
           </p>
           <h1
-            className="animate-fadeUp font-heading italic text-4xl sm:text-6xl text-white"
+            className="animate-fadeUp font-heading text-4xl sm:text-6xl text-white"
             style={{ animationDelay: "0.1s" }}
           >
             Oorvi Diamond
@@ -90,7 +90,7 @@ export default function OorviDiamondPage() {
           </div>
           <div className="order-1 lg:order-2">
             <p className="text-xs tracking-[0.3em] uppercase text-gold mb-3">Our Craft</p>
-            <h2 className="font-heading italic text-3xl sm:text-4xl text-brand mb-5">
+            <h2 className="font-heading text-3xl sm:text-4xl text-brand mb-5">
               Brilliance, deliberately made
             </h2>
             <p className="text-sm sm:text-base text-ink/70 leading-relaxed mb-4">
@@ -134,7 +134,7 @@ export default function OorviDiamondPage() {
         <Reveal className="relative overflow-hidden rounded-2xl bg-brand px-6 sm:px-12 py-14 text-center">
           <span className="animate-sparkle absolute top-6 left-8 h-2 w-2 rounded-full bg-gold" />
           <span className="animate-sparkle absolute bottom-8 right-10 h-1.5 w-1.5 rounded-full bg-gold-light" style={{ animationDelay: "0.6s" }} />
-          <h2 className="font-heading italic text-2xl sm:text-3xl text-white mb-3">
+          <h2 className="font-heading text-2xl sm:text-3xl text-white mb-3">
             Find the diamond that finds you
           </h2>
           <p className="text-sm text-white/70 mb-7 max-w-md mx-auto">
