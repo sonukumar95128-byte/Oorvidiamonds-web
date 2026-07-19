@@ -9,18 +9,24 @@ type Slide = { image: string; mobileImage?: string; href: string; alt: string };
 const AUTOPLAY_MS = 5000;
 const TRANSITION_MS = 600;
 const GAP_REM = 1.25; // Tailwind gap-5
-const SLIDE_PERCENT = 84; // Tailwind w-[84%]
+const SLIDE_PERCENT = 76; // active slide width — leaves room to peek both neighbours
+const CENTER_OFFSET_PERCENT = (100 - SLIDE_PERCENT) / 2;
 
 export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
   const loop = slides.length > 1;
-  // With looping, a clone of slide 0 is appended so advancing off the last
-  // real slide keeps sliding in the same direction instead of snapping
-  // backwards through the whole track.
-  const displaySlides = loop ? [...slides, slides[0]] : slides;
+  // The active slide is always centered with both neighbours peeking at the
+  // edges, so a clone of the last slide is prepended and a clone of the
+  // first slide is appended. `pos` indexes into this extended array —
+  // real slide `i` lives at `pos = i + 1`.
+  const displaySlides = loop ? [slides[slides.length - 1], ...slides, slides[0]] : slides;
+  const startPos = loop ? 1 : 0;
 
-  const [active, setActive] = useState(0);
+  const [pos, setPos] = useState(startPos);
   const [animate, setAnimate] = useState(true);
   const touchStartX = useRef<number | null>(null);
+
+  // Which real slide (0..slides.length-1) is currently shown, for the dots.
+  const activeDot = loop ? (((pos - 1) % slides.length) + slides.length) % slides.length : 0;
 
   // Each call bumps the generation counter and schedules exactly one
   // auto-advance tick tagged with that generation. When the tick fires, it
@@ -35,7 +41,7 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
     setTimeout(() => {
       if (generationRef.current !== myGeneration) return;
       setAnimate(true);
-      setActive((i) => i + 1);
+      setPos((p) => p + 1);
       scheduleNext();
     }, AUTOPLAY_MS);
   };
@@ -50,24 +56,36 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
 
   const goTo = (i: number) => {
     setAnimate(true);
-    setActive(i);
+    setPos(i + 1);
     scheduleNext();
   };
 
-  // After sliding onto the clone (which looks identical to slide 0), snap
-  // back to the real slide 0 with no transition once the animation has had
-  // time to finish — the swap is invisible since the two positions show
-  // the same image. A timer is more reliable here than the transitionend
-  // event, which doesn't always fire for every transition in every browser.
+  // Sliding onto either end clone (which look identical to the real first/
+  // last slide) snaps back to the matching real position with no
+  // transition once the animation has had time to finish — the swap is
+  // invisible since both positions show the same image. A timer is more
+  // reliable here than the transitionend event, which doesn't always fire
+  // for every transition in every browser.
   useEffect(() => {
-    if (!loop || active !== slides.length) return;
-    const t = setTimeout(() => {
-      setAnimate(false);
-      setActive(0);
-      scheduleNext();
-    }, TRANSITION_MS);
-    return () => clearTimeout(t);
-  }, [active, loop, slides.length]);
+    if (!loop) return;
+    if (pos === slides.length + 1) {
+      const t = setTimeout(() => {
+        setAnimate(false);
+        setPos(1);
+        scheduleNext();
+      }, TRANSITION_MS);
+      return () => clearTimeout(t);
+    }
+    if (pos === 0) {
+      const t = setTimeout(() => {
+        setAnimate(false);
+        setPos(slides.length);
+        scheduleNext();
+      }, TRANSITION_MS);
+      return () => clearTimeout(t);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pos, loop, slides.length]);
 
   // Re-enable the transition on the next frame after a no-transition snap.
   useEffect(() => {
@@ -89,20 +107,20 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
     if (delta < -threshold) {
       // swiped left → next
       setAnimate(true);
-      setActive((i) => i + 1);
+      setPos((p) => p + 1);
       scheduleNext();
     } else if (delta > threshold) {
       // swiped right → previous
       setAnimate(true);
-      setActive((i) => (i === 0 ? slides.length - 1 : i - 1));
+      setPos((p) => p - 1);
       scheduleNext();
     }
   };
 
   if (slides.length === 0) return null;
 
-  const offsetPercent = -SLIDE_PERCENT * active;
-  const offsetRem = -GAP_REM * active;
+  const offsetPercent = CENTER_OFFSET_PERCENT - SLIDE_PERCENT * pos;
+  const offsetRem = -GAP_REM * pos;
 
   return (
     <div>
@@ -120,15 +138,15 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
             <Link
               key={i}
               href={slide.href}
-              className="relative shrink-0 w-[84%] h-[340px] sm:h-[440px] lg:h-[560px] rounded-[20px] overflow-hidden bg-brand"
+              className="relative shrink-0 w-[76%] h-[340px] sm:h-[440px] lg:h-[560px] rounded-[20px] overflow-hidden bg-brand"
             >
               {slide.mobileImage ? (
                 <>
-                  <Image src={slide.mobileImage} alt={slide.alt} fill priority={i === 0} sizes="84vw" className="object-cover sm:hidden" />
-                  <Image src={slide.image} alt={slide.alt} fill priority={i === 0} sizes="84vw" className="hidden object-cover sm:block" />
+                  <Image src={slide.mobileImage} alt={slide.alt} fill priority={i === startPos} sizes="76vw" className="object-cover sm:hidden" />
+                  <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="76vw" className="hidden object-cover sm:block" />
                 </>
               ) : (
-                <Image src={slide.image} alt={slide.alt} fill priority={i === 0} sizes="84vw" className="object-cover" />
+                <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="76vw" className="object-cover" />
               )}
             </Link>
           ))}
@@ -142,7 +160,7 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
               key={i}
               aria-label={`Go to slide ${i + 1}`}
               onClick={() => goTo(i)}
-              className={"h-[9px] w-[9px] rounded-full transition-colors " + (i === active % slides.length ? "bg-brand" : "bg-beige")}
+              className={"h-[9px] w-[9px] rounded-full transition-colors " + (i === activeDot ? "bg-brand" : "bg-beige")}
             />
           ))}
         </div>
