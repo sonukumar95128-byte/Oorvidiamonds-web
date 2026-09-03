@@ -138,7 +138,7 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
             <Link
               key={i}
               href={slide.href}
-              className="relative shrink-0 w-[76%] h-[340px] sm:h-[440px] lg:h-[560px] rounded-[20px] overflow-hidden bg-brand"
+              className="relative shrink-0 w-[76%] aspect-[4/5] sm:aspect-[1920/700] rounded-[20px] overflow-hidden bg-brand"
             >
               {slide.mobileImage ? (
                 <>
