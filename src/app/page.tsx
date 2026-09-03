@@ -131,7 +131,7 @@ export default async function Home() {
 
       {/* Hero — peeking carousel */}
       {isOn("hero") && (
-        <section className="pt-5 pb-2">
+        <section className="pt-0 pb-2 sm:pt-5">
           <HeroPeekCarousel slides={liveHeroSlides} />
         </section>
       )}
