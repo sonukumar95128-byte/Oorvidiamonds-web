@@ -9,8 +9,8 @@ type Slide = { image: string; mobileImage?: string; href: string; alt: string };
 const AUTOPLAY_MS = 5000;
 const TRANSITION_MS = 600;
 const GAP_REM = 1.25; // Tailwind gap-5
-const SLIDE_PERCENT = 76; // active slide width — leaves room to peek both neighbours
-const CENTER_OFFSET_PERCENT = (100 - SLIDE_PERCENT) / 2;
+const DESKTOP_SLIDE_PERCENT = 76; // active slide width on sm+ — leaves room to peek both neighbours
+const MOBILE_SLIDE_PERCENT = 100; // full-width, single image at a time on mobile
 
 export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
   const loop = slides.length > 1;
@@ -23,7 +23,22 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
 
   const [pos, setPos] = useState(startPos);
   const [animate, setAnimate] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
   const touchStartX = useRef<number | null>(null);
+
+  // Mobile shows the full image edge-to-edge (no peek); sm+ shows the
+  // peeking layout. Tracked via matchMedia since the slide offset is
+  // computed in JS, not pure CSS, so it needs to know the breakpoint.
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 640px)");
+    setIsDesktop(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  const slidePercent = isDesktop ? DESKTOP_SLIDE_PERCENT : MOBILE_SLIDE_PERCENT;
+  const centerOffsetPercent = (100 - slidePercent) / 2;
 
   // Which real slide (0..slides.length-1) is currently shown, for the dots.
   const activeDot = loop ? (((pos - 1) % slides.length) + slides.length) % slides.length : 0;
@@ -119,12 +134,12 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
 
   if (slides.length === 0) return null;
 
-  const offsetPercent = CENTER_OFFSET_PERCENT - SLIDE_PERCENT * pos;
+  const offsetPercent = centerOffsetPercent - slidePercent * pos;
   const offsetRem = -GAP_REM * pos;
 
   return (
     <div>
-      <div className="overflow-hidden px-6 sm:px-10">
+      <div className="overflow-hidden px-0 sm:px-10">
         <div
           className="flex gap-5"
           style={{
@@ -138,15 +153,15 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
             <Link
               key={i}
               href={slide.href}
-              className="relative shrink-0 w-[76%] aspect-[4/5] sm:aspect-[1920/700] rounded-[20px] overflow-hidden bg-brand"
+              className="relative shrink-0 w-full sm:w-[76%] aspect-[4/5] sm:aspect-[1920/900] rounded-none sm:rounded-[20px] overflow-hidden bg-brand"
             >
               {slide.mobileImage ? (
                 <>
-                  <Image src={slide.mobileImage} alt={slide.alt} fill priority={i === startPos} sizes="76vw" className="object-cover sm:hidden" />
+                  <Image src={slide.mobileImage} alt={slide.alt} fill priority={i === startPos} sizes="100vw" className="object-cover sm:hidden" />
                   <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="76vw" className="hidden object-cover sm:block" />
                 </>
               ) : (
-                <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="76vw" className="object-cover" />
+                <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="100vw" className="object-cover" />
               )}
             </Link>
           ))}

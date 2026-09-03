@@ -40,7 +40,7 @@ export default function AdminBannersPage() {
                   <Image src={slide.image} alt={slide.title} fill sizes="80px" className="object-cover" />
                 </div>
                 <p className="text-[10px] text-ink/40 mb-0.5">Desktop</p>
-                <BannerImagePicker value={slide.image} onChange={(image) => updateHeroSlide(slide.id, { image })} recommended="1920 × 700 px · full-width hero banner" />
+                <BannerImagePicker value={slide.image} onChange={(image) => updateHeroSlide(slide.id, { image })} recommended="1920 × 900 px · full-width hero banner" />
               </div>
               <div className="shrink-0">
                 <div className="relative h-14 w-11 rounded-lg overflow-hidden bg-beige border border-beige mb-1">
