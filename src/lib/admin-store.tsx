@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   categoryImages as defaultCategoryImages,
   collectionImages,
@@ -297,6 +297,8 @@ const seedSettings: SiteSettings = {
 };
 
 type AdminContextValue = {
+  saveStatus: "idle" | "saving" | "saved" | "error";
+
   products: AdminProduct[];
   addProduct: (product: Omit<AdminProduct, "slug">) => void;
   updateProduct: (slug: string, updates: Partial<AdminProduct>) => void;
@@ -373,6 +375,9 @@ type AdminContextValue = {
 const AdminContext = createContext<AdminContextValue | null>(null);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
+  const [saveStatus, setSaveStatus] = useState<AdminContextValue["saveStatus"]>("idle");
+  const pendingSaves = useRef(0);
+
   const [products, setProducts] = useState<AdminProduct[]>(seedProducts);
   const [orders, setOrders] = useState<DummyOrder[]>(dummyOrders);
   const [homepageSections, setHomepageSections] = useState<HomepageSection[]>(seedHomepageSections);
@@ -517,13 +522,29 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(BEST_SELLERS_KEY, JSON.stringify(bestSellersSlugs));
   }, [bestSellersSlugs, hydrated]);
 
-  // Sync to DB (fire-and-forget — never blocks the UI)
+  // Sync to DB (fire-and-forget — never blocks the UI), tracking a shared
+  // saveStatus so the admin UI can show real save confirmation instead of
+  // changes silently happening in the background.
   const syncDb = (key: string, value: unknown) => {
+    pendingSaves.current += 1;
+    setSaveStatus("saving");
     fetch("/api/admin/config", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key, value }),
-    }).catch(() => { /* silently ignore if DB unreachable */ });
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("save failed");
+      })
+      .catch(() => {
+        setSaveStatus("error");
+      })
+      .finally(() => {
+        pendingSaves.current -= 1;
+        if (pendingSaves.current === 0) {
+          setSaveStatus((cur) => (cur === "error" ? "error" : "saved"));
+        }
+      });
   };
 
   useEffect(() => { if (hydrated) syncDb("banners", { heroSlidesAdmin, promoStrips }); }, [heroSlidesAdmin, promoStrips, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -760,6 +781,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   return (
     <AdminContext.Provider
       value={{
+        saveStatus,
         products,
         addProduct,
         updateProduct,

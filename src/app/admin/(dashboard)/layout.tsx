@@ -2,6 +2,7 @@ import Image from "next/image";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { SaveStatusIndicator } from "@/components/admin/SaveStatusIndicator";
 import { verifyAdminToken } from "@/lib/adminSession";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -32,7 +33,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </form>
       </aside>
 
-      <main className="flex-1 p-6 sm:p-8 min-w-0">{children}</main>
+      <main className="flex-1 p-6 sm:p-8 min-w-0">
+        <SaveStatusIndicator />
+        {children}
+      </main>
     </div>
   );
 }

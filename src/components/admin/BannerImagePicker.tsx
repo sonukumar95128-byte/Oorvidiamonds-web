@@ -19,6 +19,7 @@ export function BannerImagePicker({ value, onChange, recommended }: BannerImageP
   const [search, setSearch] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [uploaded, setUploaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = products.filter((p) => p.name.toLowerCase().includes(search.toLowerCase())).slice(0, 60);
@@ -27,6 +28,7 @@ export function BannerImagePicker({ value, onChange, recommended }: BannerImageP
     const file = e.target.files?.[0];
     if (!file) return;
     setError("");
+    setUploaded(false);
     setUploading(true);
 
     try {
@@ -40,7 +42,13 @@ export function BannerImagePicker({ value, onChange, recommended }: BannerImageP
         setError(data.error ?? "Upload failed.");
       } else {
         onChange(data.url);
-        setOpen(false);
+        // Show a brief confirmation before closing so a successful upload
+        // is never just a silent disappearing modal.
+        setUploaded(true);
+        setTimeout(() => {
+          setOpen(false);
+          setUploaded(false);
+        }, 900);
       }
     } catch {
       setError("Network error — please try again.");
@@ -98,19 +106,23 @@ export function BannerImagePicker({ value, onChange, recommended }: BannerImageP
 
                 <label className={
                   "flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-6 transition-colors " +
-                  (uploading ? "border-beige opacity-60 cursor-not-allowed" : "border-beige hover:border-gold cursor-pointer")
+                  (uploaded
+                    ? "border-[#1F7A45] bg-[#e8f5ee]"
+                    : uploading
+                    ? "border-beige opacity-60 cursor-not-allowed"
+                    : "border-beige hover:border-gold cursor-pointer")
                 }>
-                  <span className="text-2xl">{uploading ? "⏳" : "🖼"}</span>
-                  <span className="text-sm font-medium text-brand">
-                    {uploading ? "Uploading…" : "Click to choose file"}
+                  <span className="text-2xl">{uploaded ? "✅" : uploading ? "⏳" : "🖼"}</span>
+                  <span className={"text-sm font-medium " + (uploaded ? "text-[#1F7A45]" : "text-brand")}>
+                    {uploaded ? "Uploaded ✓" : uploading ? "Uploading…" : "Click to choose file"}
                   </span>
-                  <span className="text-xs text-ink/40">JPG, PNG, WebP accepted</span>
+                  {!uploaded && <span className="text-xs text-ink/40">JPG, PNG, WebP accepted</span>}
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept="image/jpeg,image/png,image/webp,image/avif"
                     onChange={handleFile}
-                    disabled={uploading}
+                    disabled={uploading || uploaded}
                     className="hidden"
                   />
                 </label>
