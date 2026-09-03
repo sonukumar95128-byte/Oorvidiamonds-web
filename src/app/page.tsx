@@ -222,7 +222,7 @@ export default async function Home() {
               <h2 className="font-heading text-4xl sm:text-[44px] text-brand">Our Collections</h2>
             </Reveal>
             <Reveal className="grid grid-cols-1 sm:grid-cols-[1.35fr_1fr_1fr] sm:grid-rows-[280px_280px] gap-6">
-              <Link href={`/collections/${heroCollection.slug}`} className="relative sm:row-span-2 h-[280px] sm:h-auto overflow-hidden block group">
+              <Link href={`/collections/${heroCollection.slug}`} className="relative aspect-[4/3] sm:aspect-auto sm:row-span-2 sm:h-auto overflow-hidden block group">
                 <Image src={heroCollection.image} alt={heroCollection.title} fill sizes="(min-width:640px) 40vw, 100vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand/85 to-transparent" />
                 <div className="absolute left-0 right-0 bottom-0 p-7">
@@ -231,7 +231,7 @@ export default async function Home() {
                 </div>
               </Link>
               {restCollections.map((c) => (
-                <Link key={c.id} href={`/collections/${c.slug}`} className="relative h-[280px] overflow-hidden block group">
+                <Link key={c.id} href={`/collections/${c.slug}`} className="relative aspect-[4/3] sm:aspect-auto sm:h-[280px] overflow-hidden block group">
                   <Image src={c.image} alt={c.title} fill sizes="(min-width:640px) 25vw, 100vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-brand/85 to-transparent" />
                   <div className="absolute left-0 right-0 bottom-0 p-5">

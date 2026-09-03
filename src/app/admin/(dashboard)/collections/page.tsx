@@ -36,6 +36,7 @@ export default function AdminCollectionsPage() {
               <BannerImagePicker
                 value={c.image}
                 onChange={(image) => updateCollection(c.id, { image })}
+                recommended="1200 × 900 px · 4:3 ratio — center your subject, the featured collection shows taller on the homepage"
               />
             </div>
 
