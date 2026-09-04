@@ -8,7 +8,6 @@ import { getPriceRange, type DummyProduct } from "@/lib/dummy-images";
 type CategoryListingProps = {
   title: string;
   pageId: string;
-  fallbackBanner: string;
   products: DummyProduct[];
   activeCategories?: string[];
 };

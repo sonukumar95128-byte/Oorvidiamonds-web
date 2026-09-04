@@ -148,7 +148,6 @@ const PRODUCT_REVIEWS_KEY = "lakshiraah-product-reviews";
 const NEW_ARRIVALS_KEY = "lakshiraah-admin-new-arrivals";
 const BEST_SELLERS_KEY = "lakshiraah-admin-best-sellers";
 const CATEGORY_IMAGES_KEY = "lakshiraah-admin-category-images";
-const PAGE_BANNERS_KEY = "lakshiraah-admin-page-banners";
 const REELS_KEY = "lakshiraah-admin-reels";
 const TRUST_BADGES_KEY = "lakshiraah-trust-badges";
 
@@ -182,21 +181,8 @@ const seedHeroSlides: HeroSlideAdmin[] = heroSlides.map((s, i) => ({
 }));
 
 const seedPromoStrips: PromoStrip[] = [
-  { id: "promo-slide-1", position: "Homepage slider", title: "New Collection — Explore Now", link: "/jewellery", image: productImages[6], enabled: true },
-  { id: "promo-slide-2", position: "Homepage slider", title: "Festive Sale — Flat 20% Off", link: "/jewellery?offer=true", image: productImages[2], enabled: true },
-  { id: "promo-slide-3", position: "Homepage slider", title: "Buy 2, Get Free Gold Polish", link: "/jewellery", image: productImages[4], enabled: true },
   { id: "product-page", position: "Single product page", title: "Buy 2, get free gold polish", link: "/jewellery", image: productImages[2], enabled: true },
 ];
-
-const defaultPageBanners: Record<string, string> = {
-  shop: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=1600&h=500&fit=crop",
-  rings: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1600&h=500&fit=crop",
-  earrings: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1600&h=500&fit=crop",
-  necklaces: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1600&h=500&fit=crop",
-  bracelets: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=1600&h=500&fit=crop",
-  pendants: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=1600&h=500&fit=crop",
-  "nose-pins": "https://images.unsplash.com/photo-1631214524115-de7188ff5402?w=1600&h=500&fit=crop",
-};
 
 const seedTestimonials: AdminTestimonial[] = dummyTestimonials.map((t, i) => ({
   id: `testimonial-${i + 1}`,
@@ -320,8 +306,6 @@ type AdminContextValue = {
 
   promoStrips: PromoStrip[];
   updatePromoStrip: (id: string, updates: Partial<PromoStrip>) => void;
-  addPromoSlide: () => void;
-  deletePromoStrip: (id: string) => void;
 
   testimonials: AdminTestimonial[];
   setTestimonialStatus: (id: string, status: TestimonialStatus) => void;
@@ -358,9 +342,6 @@ type AdminContextValue = {
   categoryImages: Record<string, string>;
   updateCategoryImage: (category: string, url: string) => void;
 
-  pageBanners: Record<string, string>;
-  updatePageBanner: (pageId: string, url: string) => void;
-
   reels: AdminReel[];
   addReel: () => void;
   updateReel: (id: string, updates: Partial<AdminReel>) => void;
@@ -391,7 +372,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const [newArrivalsSlugs, setNewArrivalsSlugs] = useState<string[]>(seedNewArrivals);
   const [bestSellersSlugs, setBestSellersSlugs] = useState<string[]>(seedBestSellers);
   const [categoryImages, setCategoryImages] = useState<Record<string, string>>(defaultCategoryImages);
-  const [pageBanners, setPageBanners] = useState<Record<string, string>>(defaultPageBanners);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -425,8 +405,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       if (rawBestSellers) setBestSellersSlugs(JSON.parse(rawBestSellers));
       const rawCategoryImages = localStorage.getItem(CATEGORY_IMAGES_KEY);
       if (rawCategoryImages) setCategoryImages(JSON.parse(rawCategoryImages));
-      const rawPageBanners = localStorage.getItem(PAGE_BANNERS_KEY);
-      if (rawPageBanners) setPageBanners(JSON.parse(rawPageBanners));
     } catch {
       // ignore malformed storage
     }
@@ -449,7 +427,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         if (db.newArrivals) setNewArrivalsSlugs(db.newArrivals as string[]);
         if (db.bestSellers) setBestSellersSlugs(db.bestSellers as string[]);
         if (db.categoryImages) setCategoryImages(db.categoryImages as Record<string, string>);
-        if (db.pageBanners) setPageBanners(db.pageBanners as Record<string, string>);
         if (db.reels) setReels(db.reels as AdminReel[]);
         if (db.trustBadges) setTrustBadges(db.trustBadges as TrustBadge[]);
       })
@@ -562,12 +539,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     syncDb("categoryImages", categoryImages);
   }, [categoryImages, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (!hydrated) return;
-    localStorage.setItem(PAGE_BANNERS_KEY, JSON.stringify(pageBanners));
-    syncDb("pageBanners", pageBanners);
-  }, [pageBanners, hydrated]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const updateSettings = (updates: Partial<SiteSettings>) => {
     setSettings((prev) => ({ ...prev, ...updates }));
   };
@@ -654,15 +625,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setPromoStrips((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
   };
 
-  const addPromoSlide = () => {
-    const id = `promo-slide-${Date.now()}`;
-    setPromoStrips((prev) => [...prev, { id, position: "Homepage slider", title: "New slide", link: "/jewellery", image: "", enabled: true }]);
-  };
-
-  const deletePromoStrip = (id: string) => {
-    setPromoStrips((prev) => prev.filter((p) => p.id !== id));
-  };
-
   const setTestimonialStatus = (id: string, status: TestimonialStatus) => {
     setTestimonials((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
   };
@@ -721,10 +683,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   const updateCategoryImage = (category: string, url: string) => {
     setCategoryImages((prev) => ({ ...prev, [category]: url }));
-  };
-
-  const updatePageBanner = (pageId: string, url: string) => {
-    setPageBanners((prev) => ({ ...prev, [pageId]: url }));
   };
 
   const [reels, setReels] = useState<AdminReel[]>([]);
@@ -799,8 +757,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         deleteHeroSlide,
         promoStrips,
         updatePromoStrip,
-        addPromoSlide,
-        deletePromoStrip,
         testimonials,
         setTestimonialStatus,
         toggleTestimonialFeatured,
@@ -829,8 +785,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         setBestSellersSlugs,
         categoryImages,
         updateCategoryImage,
-        pageBanners,
-        updatePageBanner,
         reels,
         addReel,
         updateReel,

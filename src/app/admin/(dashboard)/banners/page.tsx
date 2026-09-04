@@ -5,18 +5,8 @@ import { BannerImagePicker } from "@/components/admin/BannerImagePicker";
 import { useAdmin } from "@/lib/admin-store";
 import { categories } from "@/lib/dummy-images";
 
-const PAGE_BANNER_LABELS: { id: string; label: string }[] = [
-  { id: "shop", label: "Shop / All Jewellery page" },
-  { id: "rings", label: "Rings page" },
-  { id: "earrings", label: "Earrings page" },
-  { id: "necklaces", label: "Necklaces page" },
-  { id: "bracelets", label: "Bracelets page" },
-  { id: "pendants", label: "Pendants page" },
-  { id: "nose-pins", label: "Nose Pins page" },
-];
-
 export default function AdminBannersPage() {
-  const { heroSlidesAdmin, addHeroSlide, updateHeroSlide, toggleHeroSlide, deleteHeroSlide, promoStrips, updatePromoStrip, addPromoSlide, deletePromoStrip, categoryImages, updateCategoryImage, pageBanners, updatePageBanner } =
+  const { heroSlidesAdmin, addHeroSlide, updateHeroSlide, toggleHeroSlide, deleteHeroSlide, promoStrips, updatePromoStrip, categoryImages, updateCategoryImage } =
     useAdmin();
 
   return (
@@ -113,80 +103,6 @@ export default function AdminBannersPage() {
               onChange={(url) => updateCategoryImage(cat, url)}
               recommended="400 × 400 px · square circle image"
             />
-          </div>
-        ))}
-      </div>
-
-      {/* Page banners */}
-      <h2 className="text-sm font-medium text-brand mb-1">Page banners</h2>
-      <p className="text-xs text-ink/50 mb-4">Top banner shown on Shop and each category page</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-        {PAGE_BANNER_LABELS.map(({ id, label }) => (
-          <div key={id} className="rounded-xl border border-beige bg-white p-4">
-            <div className="relative aspect-[4/1] rounded-lg overflow-hidden bg-beige border border-beige mb-2">
-              {pageBanners[id] && (
-                <img src={pageBanners[id]} alt={label} className="h-full w-full object-cover" />
-              )}
-            </div>
-            <p className="text-xs font-medium text-brand mb-2">{label}</p>
-            <BannerImagePicker value={pageBanners[id] ?? ""} onChange={(url) => updatePageBanner(id, url)} recommended="1600 × 400 px · page top banner (4:1 ratio)" />
-          </div>
-        ))}
-      </div>
-
-      {/* Homepage promo slider */}
-      <div className="flex items-center justify-between mb-1">
-        <h2 className="text-sm font-medium text-brand">Homepage promo slider</h2>
-        <button
-          onClick={addPromoSlide}
-          className="rounded-full bg-brand px-4 py-1.5 text-xs font-medium text-gold-light hover:bg-brand-secondary transition-colors"
-        >
-          + Add slide
-        </button>
-      </div>
-      <p className="text-xs text-ink/50 mb-4">These slides auto-rotate on the homepage offer banner section</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-        {promoStrips.filter((s) => s.position === "Homepage slider").map((strip) => (
-          <div key={strip.id} className="rounded-xl border border-beige bg-white p-4">
-            <div className="relative aspect-[16/6] rounded-lg overflow-hidden bg-beige border border-beige mb-2">
-              {strip.image ? (
-                <img src={strip.image} alt={strip.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-              ) : (
-                <div className="flex h-full items-center justify-center text-xs text-ink/30">No image — click Change image</div>
-              )}
-            </div>
-            <div className="mb-2">
-              <BannerImagePicker value={strip.image} onChange={(image) => updatePromoStrip(strip.id, { image })} recommended="1600 × 600 px · promo slider (16:6 ratio)" />
-            </div>
-            <div className="flex gap-2 mb-2">
-              <input
-                value={strip.title}
-                onChange={(e) => updatePromoStrip(strip.id, { title: e.target.value })}
-                placeholder="Slide title"
-                className="flex-1 rounded-lg border border-beige px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
-              />
-              <button
-                onClick={() => updatePromoStrip(strip.id, { enabled: !(strip.enabled ?? true) })}
-                aria-label="Toggle"
-                className={"relative h-7 w-12 rounded-full transition-colors shrink-0 " + ((strip.enabled ?? true) ? "bg-gold" : "bg-beige")}
-              >
-                <span className={"absolute top-1 h-5 w-5 rounded-full bg-white transition-transform " + ((strip.enabled ?? true) ? "translate-x-6" : "translate-x-1")} />
-              </button>
-            </div>
-            <div className="flex gap-2">
-              <input
-                value={strip.link}
-                onChange={(e) => updatePromoStrip(strip.id, { link: e.target.value })}
-                placeholder="Link (e.g. /jewellery)"
-                className="flex-1 rounded-lg border border-beige px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gold"
-              />
-              <button
-                onClick={() => deletePromoStrip(strip.id)}
-                className="text-ink/40 hover:text-red-500 px-2"
-              >
-                ✕
-              </button>
-            </div>
           </div>
         ))}
       </div>

@@ -11,15 +11,6 @@ export const categoryImages: Record<string, string> = {
   "Nose Pins": "https://res.cloudinary.com/sbj4xmfv/image/upload/ANP000061-1.webp",
 };
 
-export const categoryBannerImages: Record<string, string> = {
-  Rings: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1600&h=500&fit=crop",
-  Earrings: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1600&h=500&fit=crop",
-  Necklaces: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1600&h=500&fit=crop",
-  Bracelets: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=1600&h=500&fit=crop",
-  Pendants: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=1600&h=500&fit=crop",
-  "Nose Pins": "https://images.unsplash.com/photo-1631214524115-de7188ff5402?w=1600&h=500&fit=crop",
-};
-
 export const heroImage =
   "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1600&h=700&fit=crop";
 
@@ -40,9 +31,6 @@ export const heroSlides = [
     alt: "Rings collection",
   },
 ];
-
-export const promoImage =
-  "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=1600&h=500&fit=crop";
 
 export const collectionImages: Record<string, string> = {
   Bridal: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=450&fit=crop",

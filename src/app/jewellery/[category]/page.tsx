@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { CategoryListing } from "@/components/CategoryListing";
 import {
   categories,
-  categoryBannerImages,
   categoryToSlug,
   dummyProducts,
   slugToCategory,
@@ -38,7 +37,6 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
     <CategoryListing
       title={category}
       pageId={slug}
-      fallbackBanner={categoryBannerImages[category]}
       products={products}
       activeCategories={[slug]}
     />

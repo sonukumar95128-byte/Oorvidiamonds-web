@@ -11,7 +11,6 @@ const PUBLIC_KEYS = [
   "newArrivals",
   "bestSellers",
   "categoryImages",
-  "pageBanners",
   "reels",
   "trustBadges",
 ];
