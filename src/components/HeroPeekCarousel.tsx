@@ -137,35 +137,68 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
   const offsetPercent = centerOffsetPercent - slidePercent * pos;
   const offsetRem = -GAP_REM * pos;
 
+  const goPrev = () => {
+    setAnimate(true);
+    setPos((p) => p - 1);
+    scheduleNext();
+  };
+
+  const goNext = () => {
+    setAnimate(true);
+    setPos((p) => p + 1);
+    scheduleNext();
+  };
+
   return (
     <div>
-      <div className="overflow-hidden px-0 sm:px-10">
-        <div
-          className="flex gap-5"
-          style={{
-            transform: `translateX(calc(${offsetPercent}% + ${offsetRem}rem))`,
-            transition: animate ? `transform ${TRANSITION_MS}ms ease` : "none",
-          }}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {displaySlides.map((slide, i) => (
-            <Link
-              key={i}
-              href={slide.href}
-              className="relative shrink-0 w-full sm:w-[76%] aspect-[4/5] sm:aspect-[1920/900] rounded-none sm:rounded-[20px] overflow-hidden bg-brand"
-            >
-              {slide.mobileImage ? (
-                <>
-                  <Image src={slide.mobileImage} alt={slide.alt} fill priority={i === startPos} sizes="100vw" className="object-cover sm:hidden" />
-                  <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="76vw" className="hidden object-cover sm:block" />
-                </>
-              ) : (
-                <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="100vw" className="object-cover" />
-              )}
-            </Link>
-          ))}
+      <div className="relative">
+        <div className="overflow-hidden px-0 sm:px-10">
+          <div
+            className="flex gap-5"
+            style={{
+              transform: `translateX(calc(${offsetPercent}% + ${offsetRem}rem))`,
+              transition: animate ? `transform ${TRANSITION_MS}ms ease` : "none",
+            }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {displaySlides.map((slide, i) => (
+              <Link
+                key={i}
+                href={slide.href}
+                className="relative shrink-0 w-full sm:w-[76%] aspect-[4/5] sm:aspect-[1920/900] rounded-none sm:rounded-[20px] overflow-hidden bg-brand"
+              >
+                {slide.mobileImage ? (
+                  <>
+                    <Image src={slide.mobileImage} alt={slide.alt} fill priority={i === startPos} sizes="100vw" className="object-cover sm:hidden" />
+                    <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="76vw" className="hidden object-cover sm:block" />
+                  </>
+                ) : (
+                  <Image src={slide.image} alt={slide.alt} fill priority={i === startPos} sizes="100vw" className="object-cover" />
+                )}
+              </Link>
+            ))}
+          </div>
         </div>
+
+        {loop && (
+          <>
+            <button
+              onClick={goPrev}
+              aria-label="Previous slide"
+              className="hidden sm:grid absolute left-4 top-1/2 -translate-y-1/2 z-10 h-11 w-11 place-items-center rounded-full border border-white/30 bg-black/25 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-black/40"
+            >
+              <ArrowIcon direction="left" />
+            </button>
+            <button
+              onClick={goNext}
+              aria-label="Next slide"
+              className="hidden sm:grid absolute right-4 top-1/2 -translate-y-1/2 z-10 h-11 w-11 place-items-center rounded-full border border-white/30 bg-black/25 text-white shadow-lg backdrop-blur-md transition-colors hover:bg-black/40"
+            >
+              <ArrowIcon direction="right" />
+            </button>
+          </>
+        )}
       </div>
 
       {slides.length > 1 && (
@@ -181,5 +214,17 @@ export function HeroPeekCarousel({ slides }: { slides: Slide[] }) {
         </div>
       )}
     </div>
+  );
+}
+
+function ArrowIcon({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d={direction === "left" ? "M15 18l-6-6 6-6" : "M9 6l6 6-6 6"}
+      />
+    </svg>
   );
 }
