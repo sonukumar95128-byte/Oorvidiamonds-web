@@ -18,13 +18,20 @@ const navLinks = [
   { label: "Pendants", href: "/jewellery/pendants" },
   { label: "Bracelets", href: "/jewellery/bracelets" },
   { label: "Nose Pins", href: "/jewellery/nose-pins" },
-  { label: "Compare", href: "/compare" },
 ];
 
 function HeartIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.3l7.8-7.8 1-1.1a5.5 5.5 0 0 0 0-7.8z" />
+    </svg>
+  );
+}
+
+function CompareIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 3v14M7 17l-3-3M7 17l3-3M17 21V7M17 7l-3 3M17 7l3 3" />
     </svg>
   );
 }
@@ -127,7 +134,6 @@ export function Header() {
                 }
               >
                 {link.label}
-                {link.href === "/compare" && compareCount > 0 ? ` (${compareCount})` : ""}
               </Link>
             ))}
           </nav>
@@ -164,6 +170,23 @@ export function Header() {
                   }
                 >
                   {wishlistCount > 9 ? "9+" : wishlistCount}
+                </span>
+              )}
+            </Link>
+            <Link
+              href="/compare"
+              aria-label="Compare"
+              className={"relative transition-colors " + (scrolled ? "text-gold-light hover:text-gold" : "text-brand hover:text-gold")}
+            >
+              <CompareIcon />
+              {compareCount > 0 && (
+                <span
+                  className={
+                    "absolute -top-1.5 -right-2 grid h-4 w-4 place-items-center rounded-full text-[10px] transition-colors " +
+                    (scrolled ? "bg-gold-light text-brand" : "bg-brand text-gold-light")
+                  }
+                >
+                  {compareCount > 9 ? "9+" : compareCount}
                 </span>
               )}
             </Link>
@@ -236,7 +259,6 @@ export function Header() {
                   className="py-3 text-[15px] text-ink/85 border-b border-beige/70 hover:text-brand transition-colors"
                 >
                   {link.label}
-                  {link.href === "/compare" && compareCount > 0 ? ` (${compareCount})` : ""}
                 </Link>
               ))}
             </nav>

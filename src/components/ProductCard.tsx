@@ -79,16 +79,30 @@ export function ProductCard({ slug, image, hoverImage, name, spec, price, badge,
             {badge}
           </span>
         )}
-        <button
-          onClick={() => toggleWishlist(slug)}
-          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className={
-            "absolute top-3 right-3 z-10 grid h-8 w-8 place-items-center bg-white/90 transition-colors " +
-            (wishlisted ? "text-gold" : "text-ink/40 hover:text-gold")
-          }
-        >
-          <span className="text-base leading-none">{wishlisted ? "♥" : "♡"}</span>
-        </button>
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+          <button
+            onClick={() => toggleWishlist(slug)}
+            aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            className={
+              "grid h-8 w-8 place-items-center bg-white/90 transition-colors " +
+              (wishlisted ? "text-gold" : "text-ink/40 hover:text-gold")
+            }
+          >
+            <span className="text-base leading-none">{wishlisted ? "♥" : "♡"}</span>
+          </button>
+          <button
+            onClick={() => toggleCompare(slug)}
+            disabled={!compared && atLimit}
+            aria-label={compared ? "Remove from compare" : "Add to compare"}
+            title={!compared && atLimit ? `You can compare up to ${MAX_COMPARE} products` : undefined}
+            className={
+              "grid h-8 w-8 place-items-center bg-white/90 transition-colors disabled:cursor-not-allowed disabled:opacity-40 " +
+              (compared ? "text-gold" : "text-ink/40 hover:text-gold")
+            }
+          >
+            <CompareIcon />
+          </button>
+        </div>
       </div>
 
       {/* Info */}
@@ -128,19 +142,6 @@ export function ProductCard({ slug, image, hoverImage, name, spec, price, badge,
             Add to Cart
           </button>
         )}
-
-        <button
-          onClick={() => toggleCompare(slug)}
-          disabled={!compared && atLimit}
-          title={!compared && atLimit ? `You can compare up to ${MAX_COMPARE} products` : undefined}
-          className={
-            "mt-2.5 flex w-full items-center justify-center gap-1.5 py-1.5 text-[11px] tracking-[1.5px] uppercase transition-colors disabled:cursor-not-allowed disabled:opacity-40 " +
-            (compared ? "text-gold" : "text-ink/45 hover:text-brand")
-          }
-        >
-          <CompareIcon />
-          {compared ? "Added to Compare" : "Add to Compare"}
-        </button>
       </div>
     </div>
   );
