@@ -19,9 +19,13 @@ export async function generateMetadata({
   const category = slugToCategory(slug);
   if (!category) return { title: "Not found — Oorvi Diamonds" };
 
+  const title = `${category} | Oorvi Diamonds`;
+  const description = `Shop fine ${category.toLowerCase()} — certified diamonds set in hallmarked gold, handcrafted by Oorvi Diamonds.`;
+
   return {
-    title: `${category} | Oorvi Diamonds`,
-    description: `Shop fine ${category.toLowerCase()} — certified diamonds set in hallmarked gold, handcrafted by Oorvi Diamonds.`,
+    title,
+    description,
+    openGraph: { title, description, type: "website" },
   };
 }
 

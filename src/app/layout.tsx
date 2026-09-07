@@ -19,13 +19,31 @@ const jost = Jost({
   weight: ["300", "400", "500"],
 });
 
+const siteName = "Oorvi Diamonds";
+const defaultTitle = "Oorvi Diamonds — Fine Diamond Jewellery";
+const defaultDescription = "Certified diamonds set in 18K gold — handcrafted fine jewellery for every occasion.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")),
   title: {
-    default: "Oorvi Diamonds — Fine Diamond Jewellery",
+    default: defaultTitle,
     template: "%s",
   },
-  description: "Certified diamonds set in 18K gold — handcrafted fine jewellery for every occasion.",
+  description: defaultDescription,
+  openGraph: {
+    siteName,
+    title: defaultTitle,
+    description: defaultDescription,
+    type: "website",
+    locale: "en_IN",
+    images: [{ url: "/brand/oorvi-logo.png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: defaultTitle,
+    description: defaultDescription,
+    images: [{ url: "/brand/oorvi-logo.png" }],
+  },
 };
 
 export default function RootLayout({

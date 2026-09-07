@@ -15,6 +15,7 @@ import {
   dummyProducts,
   getCategoryTags,
   getProductBySlug,
+  priceToNumber,
   slugToCategory,
   styleTags,
 } from "@/lib/dummy-images";
@@ -28,7 +29,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ category: string; product: string }>;
 }): Promise<Metadata> {
-  const { product: productSlug } = await params;
+  const { category: categorySlug, product: productSlug } = await params;
   const product = getProductBySlug(productSlug);
 
   if (!product) return { title: "Product not found — Oorvi Diamonds" };
@@ -39,9 +40,11 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: `/jewellery/${categorySlug}/${productSlug}` },
     openGraph: {
       title,
       description,
+      type: "website",
       images: [{ url: product.image }],
     },
   };
@@ -63,8 +66,32 @@ export default async function ProductDetailPage({
 
   const related = dummyProducts.filter((p) => p.category === category && p.slug !== product.slug).slice(0, 4);
 
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: gallery,
+    description: product.description,
+    sku: product.sku,
+    brand: { "@type": "Brand", name: "Oorvi Diamonds" },
+    aggregateRating: product.reviewCount > 0
+      ? { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.reviewCount }
+      : undefined,
+    offers: {
+      "@type": "Offer",
+      url: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/jewellery/${categorySlug}/${productSlug}`,
+      priceCurrency: "INR",
+      price: priceToNumber(product.price),
+      availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10 pt-6 pb-16">
         <nav className="flex items-center gap-2.5 text-[13.5px] text-ink/50 mb-6">
           <Link href="/" className="hover:text-brand transition-colors">Home</Link>

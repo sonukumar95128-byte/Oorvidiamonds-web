@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import {
   categoryImages as defaultCategoryImages,
   collectionImages,
@@ -356,6 +357,13 @@ type AdminContextValue = {
 const AdminContext = createContext<AdminContextValue | null>(null);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
+  // This provider wraps the whole app (public pages included) since public
+  // pages read shop data through it — but only admin pages ever mutate that
+  // data, so DB reads/writes against the admin-only API are skipped outside
+  // /admin to avoid firing guaranteed-403 requests on every public page view.
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin") ?? false;
+
   const [saveStatus, setSaveStatus] = useState<AdminContextValue["saveStatus"]>("idle");
   const pendingSaves = useRef(0);
 
@@ -433,15 +441,18 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       .catch(() => { /* DB not available — localStorage values stay */ })
       .finally(() => setHydrated(true));
 
-    // Also load admin-only data (coupons, productReviews) if logged in as admin
-    fetch("/api/admin/config?key=coupons")
-      .then((r) => r.ok ? r.json() : null)
-      .then((v) => { if (v) setCoupons(v as typeof seedCoupons); })
-      .catch(() => {});
-    fetch("/api/admin/config?key=productReviews")
-      .then((r) => r.ok ? r.json() : null)
-      .then((v) => { if (v) setProductReviews(v as ProductReview[]); })
-      .catch(() => {});
+    // Also load admin-only data (coupons, productReviews) — only on admin
+    // routes, since these always 403 for a logged-out public visitor.
+    if (isAdminRoute) {
+      fetch("/api/admin/config?key=coupons")
+        .then((r) => r.ok ? r.json() : null)
+        .then((v) => { if (v) setCoupons(v as typeof seedCoupons); })
+        .catch(() => {});
+      fetch("/api/admin/config?key=productReviews")
+        .then((r) => r.ok ? r.json() : null)
+        .then((v) => { if (v) setProductReviews(v as ProductReview[]); })
+        .catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -503,6 +514,10 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   // saveStatus so the admin UI can show real save confirmation instead of
   // changes silently happening in the background.
   const syncDb = (key: string, value: unknown) => {
+    // Public pages never mutate this data — only admin page components call
+    // the setters that lead here — so skip the (always-403) write outside
+    // /admin rather than firing it on every public page view.
+    if (!isAdminRoute) return;
     pendingSaves.current += 1;
     setSaveStatus("saving");
     fetch("/api/admin/config", {
