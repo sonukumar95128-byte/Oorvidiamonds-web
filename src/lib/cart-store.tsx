@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useToast } from "@/lib/toast-store";
 
 export type CartLine = { slug: string; quantity: number };
 
@@ -18,6 +19,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "lakshiraah-cart";
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { showToast } = useToast();
   const [items, setItems] = useState<CartLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
@@ -44,6 +46,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { slug, quantity }];
     });
+    showToast("Added to Cart");
   };
 
   const removeItem = (slug: string) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useToast } from "@/lib/toast-store";
 
 type WishlistContextValue = {
   slugs: string[];
@@ -15,6 +16,7 @@ const WishlistContext = createContext<WishlistContextValue | null>(null);
 const STORAGE_KEY = "lakshiraah-wishlist";
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
+  const { showToast } = useToast();
   const [slugs, setSlugs] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
@@ -37,6 +39,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const toggleWishlist = (slug: string) => {
     setSlugs((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
+    showToast(slugs.includes(slug) ? "Removed from Wishlist" : "Added to Wishlist");
   };
 
   const removeFromWishlist = (slug: string) => {

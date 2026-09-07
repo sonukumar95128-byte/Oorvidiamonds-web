@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useToast } from "@/lib/toast-store";
 
 export const MAX_COMPARE = 4;
 
@@ -19,6 +20,7 @@ const CompareContext = createContext<CompareContextValue | null>(null);
 const STORAGE_KEY = "oorvi-compare";
 
 export function CompareProvider({ children }: { children: ReactNode }) {
+  const { showToast } = useToast();
   const [slugs, setSlugs] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
@@ -40,11 +42,12 @@ export function CompareProvider({ children }: { children: ReactNode }) {
   const isCompared = (slug: string) => slugs.includes(slug);
 
   const toggleCompare = (slug: string) => {
-    setSlugs((prev) => {
-      if (prev.includes(slug)) return prev.filter((s) => s !== slug);
-      if (prev.length >= MAX_COMPARE) return prev;
-      return [...prev, slug];
-    });
+    if (!slugs.includes(slug) && slugs.length >= MAX_COMPARE) {
+      showToast(`You can compare up to ${MAX_COMPARE} products`);
+      return;
+    }
+    setSlugs((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
+    showToast(slugs.includes(slug) ? "Removed from Compare" : "Added to Compare");
   };
 
   const removeFromCompare = (slug: string) => {

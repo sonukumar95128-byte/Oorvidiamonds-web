@@ -7,6 +7,7 @@ import { AdminProvider } from "@/lib/admin-store";
 import { WishlistProvider } from "@/lib/wishlist-store";
 import { CompareProvider } from "@/lib/compare-store";
 import { UserProvider } from "@/lib/user-store";
+import { ToastProvider } from "@/lib/toast-store";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -60,13 +61,15 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-ivory text-ink">
         <AdminProvider>
           <UserProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <CompareProvider>
-                  <SiteChrome>{children}</SiteChrome>
-                </CompareProvider>
-              </WishlistProvider>
-            </CartProvider>
+            <ToastProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <CompareProvider>
+                    <SiteChrome>{children}</SiteChrome>
+                  </CompareProvider>
+                </WishlistProvider>
+              </CartProvider>
+            </ToastProvider>
           </UserProvider>
         </AdminProvider>
       </body>
