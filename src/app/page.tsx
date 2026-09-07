@@ -8,6 +8,7 @@ import { CuratedProductGrid } from "@/components/CuratedProductGrid";
 import { HeroPeekCarousel } from "@/components/HeroPeekCarousel";
 import { ReelsGrid } from "@/components/ReelsGrid";
 import { Reveal } from "@/components/Reveal";
+import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import {
   categories,
   categoryImages as defaultCategoryImages,
@@ -121,8 +122,7 @@ export default async function Home() {
   const [heroCollection, ...restCollections] = liveCollections;
   const liveTestimonials = testimonials
     .filter((t) => t.status === "approved")
-    .sort((a, b) => Number(b.featured) - Number(a.featured))
-    .slice(0, 3);
+    .sort((a, b) => Number(b.featured) - Number(a.featured));
   const liveTrustBadges = trustBadges.filter((b) => b.enabled);
 
   return (
@@ -267,28 +267,11 @@ export default async function Home() {
               <h2 className="font-heading text-4xl sm:text-[44px] text-brand">What Our Customers Say</h2>
               <p className="font-light text-sm sm:text-base text-ink/60 mt-3.5">★ 4.8 average · 12,400+ verified reviews</p>
             </Reveal>
-            <Reveal className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-[26px]">
-              {liveTestimonials.map((t) => (
-                <div key={t.id} className="bg-white border border-beige p-6">
-                  <div className="text-gold text-sm mb-3">{"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}</div>
-                  <p className="text-[15px] text-ink/80 leading-relaxed mb-5">{t.text}</p>
-                  <div className="flex items-center gap-3">
-                    {t.avatar ? (
-                      <div className="relative h-9 w-9 rounded-full overflow-hidden shrink-0">
-                        <Image src={t.avatar} alt={t.name} fill sizes="36px" className="object-cover" />
-                      </div>
-                    ) : (
-                      <div className="h-9 w-9 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm font-medium shrink-0">
-                        {t.name.charAt(0)}
-                      </div>
-                    )}
-                    <span className="font-heading text-lg text-brand">{t.name}</span>
-                    <span className="text-xs tracking-[1px] uppercase text-gold ml-auto">✓ verified</span>
-                  </div>
-                </div>
-              ))}
-              {liveTestimonials.length === 0 && (
-                <p className="col-span-full text-center text-sm text-ink/40 py-8">No approved testimonials yet.</p>
+            <Reveal>
+              {liveTestimonials.length > 0 ? (
+                <TestimonialsCarousel testimonials={liveTestimonials} />
+              ) : (
+                <p className="text-center text-sm text-ink/40 py-8">No approved testimonials yet.</p>
               )}
             </Reveal>
           </section>

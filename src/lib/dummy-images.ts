@@ -80,6 +80,34 @@ export const dummyTestimonials: DummyTestimonial[] = [
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop",
     verified: true,
   },
+  {
+    name: "Sanya Kapoor",
+    rating: 5,
+    text: "The bracelet is even more delicate and elegant than in the photos. Loved that I could track my order at every step — arrived two days early!",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop",
+    verified: true,
+  },
+  {
+    name: "Meera Iyer",
+    rating: 5,
+    text: "Ordered a pendant for my mother's birthday and she hasn't taken it off since. The packaging alone felt like a premium unboxing experience.",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop",
+    verified: true,
+  },
+  {
+    name: "Ritika Sharma",
+    rating: 4,
+    text: "Beautiful nose pin, true to size. Had a small sizing doubt and their WhatsApp support cleared it up within minutes before I ordered.",
+    avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&h=80&fit=crop",
+    verified: true,
+  },
+  {
+    name: "Ananya Joshi",
+    rating: 5,
+    text: "My go-to for everyday gold jewellery now. The lifetime exchange policy is what finally convinced me to buy, and the piece itself is flawless.",
+    avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop",
+    verified: true,
+  },
 ];
 
 export const categories = ["Rings", "Earrings", "Necklaces", "Bracelets", "Pendants", "Nose Pins"] as const;
