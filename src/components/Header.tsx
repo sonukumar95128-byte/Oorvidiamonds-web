@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
+import { useCompare } from "@/lib/compare-store";
 import { useUser } from "@/lib/user-store";
 import { CartDrawer } from "@/components/CartDrawer";
 
@@ -17,6 +18,7 @@ const navLinks = [
   { label: "Pendants", href: "/jewellery/pendants" },
   { label: "Bracelets", href: "/jewellery/bracelets" },
   { label: "Nose Pins", href: "/jewellery/nose-pins" },
+  { label: "Compare", href: "/compare" },
 ];
 
 function HeartIcon() {
@@ -65,6 +67,7 @@ function MenuIcon() {
 export function Header() {
   const { itemCount } = useCart();
   const { count: wishlistCount } = useWishlist();
+  const { count: compareCount } = useCompare();
   const { user, isLoggedIn } = useUser();
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -124,6 +127,7 @@ export function Header() {
                 }
               >
                 {link.label}
+                {link.href === "/compare" && compareCount > 0 ? ` (${compareCount})` : ""}
               </Link>
             ))}
           </nav>
@@ -232,6 +236,7 @@ export function Header() {
                   className="py-3 text-[15px] text-ink/85 border-b border-beige/70 hover:text-brand transition-colors"
                 >
                   {link.label}
+                  {link.href === "/compare" && compareCount > 0 ? ` (${compareCount})` : ""}
                 </Link>
               ))}
             </nav>

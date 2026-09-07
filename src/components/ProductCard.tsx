@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/lib/cart-store";
 import { useWishlist } from "@/lib/wishlist-store";
+import { MAX_COMPARE, useCompare } from "@/lib/compare-store";
 
 type ProductCardProps = {
   slug: string;
@@ -20,6 +21,8 @@ export function ProductCard({ slug, image, hoverImage, name, spec, price, badge,
   const inBag = items.some((i) => i.slug === slug);
   const { isWishlisted, toggleWishlist } = useWishlist();
   const wishlisted = isWishlisted(slug);
+  const { isCompared, toggleCompare, atLimit } = useCompare();
+  const compared = isCompared(slug);
 
   return (
     <div className="group bg-white border border-beige transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_18px_40px_rgba(64,8,13,0.14)] animate-fadeUp">
@@ -125,7 +128,28 @@ export function ProductCard({ slug, image, hoverImage, name, spec, price, badge,
             Add to Cart
           </button>
         )}
+
+        <button
+          onClick={() => toggleCompare(slug)}
+          disabled={!compared && atLimit}
+          title={!compared && atLimit ? `You can compare up to ${MAX_COMPARE} products` : undefined}
+          className={
+            "mt-2.5 flex w-full items-center justify-center gap-1.5 py-1.5 text-[11px] tracking-[1.5px] uppercase transition-colors disabled:cursor-not-allowed disabled:opacity-40 " +
+            (compared ? "text-gold" : "text-ink/45 hover:text-brand")
+          }
+        >
+          <CompareIcon />
+          {compared ? "Added to Compare" : "Add to Compare"}
+        </button>
       </div>
     </div>
+  );
+}
+
+function CompareIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 3v14M7 17l-3-3M7 17l3-3M17 21V7M17 7l-3 3M17 7l3 3" />
+    </svg>
   );
 }
