@@ -157,6 +157,7 @@ const seedTrustBadges: TrustBadge[] = [
   { id: "badge-2", icon: "🚚", label: "Free shipping", sub: "Over ₹999", enabled: true },
   { id: "badge-3", icon: "↺", label: "15-day returns", sub: "Easy & free", enabled: true },
   { id: "badge-4", icon: "♾", label: "Lifetime exchange", sub: "Buyback support", enabled: true },
+  { id: "badge-5", icon: "🤝", label: "Preferred Partner", sub: "Angelina Jewelz", enabled: true },
 ];
 
 const seedProducts: AdminProduct[] = dummyProducts;

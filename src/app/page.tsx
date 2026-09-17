@@ -70,6 +70,7 @@ const defaultTrustBadges: TrustBadge[] = [
   { id: "badge-2", icon: "◈", label: "BIS Hallmarked", sub: "All gold is BIS hallmarked — purity you can trust, always.", enabled: true },
   { id: "badge-3", icon: "↺", label: "Lifetime Exchange", sub: "Exchange any Oorvi piece, any time, at full diamond value.", enabled: true },
   { id: "badge-4", icon: "✧", label: "Insured Shipping", sub: "Complimentary, fully insured delivery across India.", enabled: true },
+  { id: "badge-5", icon: "🤝", label: "Preferred Partner", sub: "Associate preferred partner of Angelina Jewelz.", enabled: true },
 ];
 
 const instaPosts = productImages.slice(0, 5).map((image, i) => ({
@@ -199,7 +200,12 @@ export default async function Home() {
       {/* Assurance strip — full bleed, dark background */}
       {isOn("trust-badges") && (
         <section className="bg-brand py-12 sm:py-[70px]">
-          <div className="mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-[26px] text-center">
+          <div
+            className={
+              "mx-auto max-w-[1360px] px-4 sm:px-6 lg:px-10 grid grid-cols-2 gap-6 sm:gap-[26px] text-center " +
+              (liveTrustBadges.length >= 5 ? "lg:grid-cols-5" : "lg:grid-cols-4")
+            }
+          >
             {liveTrustBadges.map((b, i) => (
               <Reveal key={b.id} delay={i * 0.08} className="flex flex-col items-center gap-3.5">
                 <div className="h-[54px] w-[54px] border border-gold rotate-45 flex items-center justify-center">
